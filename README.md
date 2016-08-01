@@ -5,7 +5,13 @@ Freescale Staging Environment
 ## Webapp
 ### Required
 - Python 2.7
-- Redis
+- Redis Server
+
+### Python Packages
+```
+$ cd webapp
+$ pip install requirements/dev.txt
+```
 
 ### Migration
 ```
@@ -35,4 +41,16 @@ $ npm start
 ### Build App
 ```
 $ npm run build
+```
+
+## Worker
+### Python Packages
+```
+$ cd worker
+$ pip install requirements/dev.txt
+```
+
+### Run Celery Worker
+```
+$ ENV=local python app.py worker -B --loglevel=info -Q q_default
 ```
