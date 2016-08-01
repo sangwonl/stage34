@@ -1,0 +1,2 @@
+django==1.9.8
+django_extensions==1.6.7
