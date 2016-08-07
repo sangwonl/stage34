@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 ]
 
 INSTALLED_APPS += [
-    'dash.apps.DashConfig',
+    'app.AppConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
