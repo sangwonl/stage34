@@ -1,2 +1,2 @@
-django==1.9.8
-django_extensions==1.6.7
+tornado==4.4.1
+tornado-celery==0.3.5
