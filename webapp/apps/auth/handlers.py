@@ -1,10 +1,8 @@
 from tornado import gen
-
-from modules.base import AsyncBaseHandler
-from modules.base import BaseHandler
+from modules.http import handlers
 
 
-class SocialAuthUrlHandler(BaseHandler):
+class SocialAuthUrlHandler(handlers.BaseHandler):
     def do_get(self, *args, **kwargs):
         return {'hello': 'world'}
 
@@ -12,7 +10,7 @@ class SocialAuthUrlHandler(BaseHandler):
         return {'hello': 'world'}
 
 
-class AsyncSocialAuthUrlHandler(AsyncBaseHandler):
+class AsyncSocialAuthUrlHandler(handlers.AsyncBaseHandler):
     @gen.coroutine
     def do_get(self, *args, **kwargs):
         raise gen.Return({'hello': 'world'})

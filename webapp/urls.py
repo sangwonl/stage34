@@ -1,7 +1,7 @@
 from tornado import web
 from conf import settings
 
-from modules.auth.urls import url_patterns as auth_url_patterns
+from apps.auth.urls import url_patterns as auth_url_patterns
 
 
 base_url_patterns = [

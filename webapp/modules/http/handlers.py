@@ -1,7 +1,7 @@
 from tornado import gen
 from tornado import web
 from tornado import websocket
-from tornado.web import HTTPError
+# from tornado.web import HTTPError
 
 
 class WSBaseHandler(websocket.WebSocketHandler):

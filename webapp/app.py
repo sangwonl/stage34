@@ -5,6 +5,7 @@ from tornado import web
 
 from conf import settings
 from urls import url_patterns
+from modules import db
 
 import signal
 import time
@@ -24,11 +25,25 @@ class TornadoApplication(web.Application):
 
         # internal variables..
         self.env = env
-        self.http_srv = None
+        self.host = kwargs.get('host', '0.0.0.0')
+        self.port = kwargs.get('port', 8000)
+
+        # initialize modules
+        self.http_srv = self.setup_http_server()
+        self.db = self.setup_db_connecter()
         self.io_loop = io_loop or ioloop.IOLoop.instance()
 
         # setup services..
         self.setup_services()
+
+    def setup_http_server(self):
+        http_srv = httpserver.HTTPServer(self)
+        http_srv.listen(self.port)
+        return http_srv
+
+    def setup_db_connecter(self):
+        db_cfgs = self.settings['database']
+        return db.create_connecter(**db_cfgs)
 
     def setup_services(self):
         # configs per environment..
@@ -38,16 +53,13 @@ class TornadoApplication(web.Application):
         # tcelery.setup_nonblocking_producer(io_loop=self.io_loop)
         pass
 
-    def start(self, host='0.0.0.0', port=8000):
+    def start(self):
+        self.logger.info('Tornado server starts successfully..')
+        self.logger.info('Listening to %d..' % self.port)        
+
         # register system signam handlers..
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
-
-        # tornado http server..
-        self.http_srv = httpserver.HTTPServer(self)
-        self.http_srv.listen(port)
-        self.logger.info('Tornado server starts successfully..')
-        self.logger.info('Listening to %d..' % port)
 
         # autoload setup and start io loop..
         autoreload.start(self.io_loop)
@@ -80,8 +92,8 @@ def main():
     parser.add_argument('--port', nargs='?', default=8000, type=int)
     args = parser.parse_args()
 
-    app = TornadoApplication(env)
-    app.start(args.host, args.port)
+    app = TornadoApplication(env, host=args.host, port=args.port)
+    app.start()
 
 
 if __name__ == '__main__':
