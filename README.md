@@ -15,12 +15,14 @@ $ pip install requirements/dev.txt
 
 #### Migration
 ```
-$ ENV=local python manage.py migrate
+$ alembic -c migrations/conf/local.ini revision "add a new column"   # new revision
+$ alembic -c migrations/conf/local.ini upgrade heads                 # migrate to heads
+$ alembic -c migrations/conf/local.ini downgrade -1                  # backward to the prev one
 ```
 
 #### Run Server
 ```
-$ ENV=local python manage.py runserver
+$ ENV=local python app.py
 ```
 
 ## Frontend

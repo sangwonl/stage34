@@ -5,7 +5,7 @@ from tornado import web
 
 from conf import settings
 from urls import url_patterns
-from modules import db
+from models import db
 
 import signal
 import time
@@ -42,8 +42,8 @@ class TornadoApplication(web.Application):
         return http_srv
 
     def setup_db_connecter(self):
-        db_cfgs = self.settings['database']
-        return db.create_connecter(**db_cfgs)
+        # db.create_all()
+        return db
 
     def setup_services(self):
         # configs per environment..
