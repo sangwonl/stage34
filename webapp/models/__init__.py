@@ -1,8 +1,7 @@
-from modules.db import create_connecter
-from conf import settings
+from modules.db import get_sqlalchemy_db
 
 
-db = create_connecter(**settings['database'])
+db = get_sqlalchemy_db()
 
 
 class User(db.Model):
