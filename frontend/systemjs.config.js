@@ -40,9 +40,6 @@
     var setPackageConfig = System.packageWithIndex ? packIndex : packUmd;
     // Add package entries for angular packages
     ngPackageNames.forEach(setPackageConfig);
-    var config = {
-        map: map,
-        packages: packages
-    };
+    var config = { map: map, packages: packages };
     System.config(config);
 })(this);

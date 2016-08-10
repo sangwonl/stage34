@@ -20,3 +20,18 @@ export class AuthGuard implements CanActivate {
         return false;
     }
 }
+
+@Injectable()
+export class AnonymousGuard implements CanActivate {
+    constructor(private authService: AuthService, private router: Router) {}
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        if (!this.authService.isLoggedIn) { return true; }
+
+        // Navigate to the home page
+        this.router.navigate(['/']);
+
+        // Guard user going to next
+        return false;
+    }
+}

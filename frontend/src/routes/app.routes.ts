@@ -1,9 +1,8 @@
 import { provideRouter, RouterConfig } from '@angular/router';
 
-import { AuthGuard } from './auth/auth.guard';
-import { AnonymousGuard } from './auth/anonymous.guard';
-import { LoginComponent } from './auth/login.component';
-import { DashComponent } from './dash/dash.component';
+import { AuthGuard, AnonymousGuard } from '../services/guard.service';
+import { LoginComponent } from '../components/auth/login.component';
+import { DashComponent } from '../components/dash/dash.component';
 
 const routes: RouterConfig = [
     { path: '', redirectTo: '/dash', pathMatch: 'full'},
@@ -11,6 +10,4 @@ const routes: RouterConfig = [
     { path: 'login', component: LoginComponent, canActivate: [AnonymousGuard] }
 ];
 
-export const appRouterProviders = [
-    provideRouter(routes)
-];
+export const appRouterProviders = [provideRouter(routes)];

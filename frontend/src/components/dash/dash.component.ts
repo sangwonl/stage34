@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
     styleUrls: ['dash.component.css']
 })
 export class DashComponent implements OnInit {
-    constructor(protected router: Router) {}
+    constructor(private router: Router) {}
 
     ngOnInit() {}
 }

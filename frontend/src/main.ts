@@ -2,12 +2,11 @@ import { bootstrap } from '@angular/platform-browser-dynamic';
 import { enableProdMode } from '@angular/core';
 
 import { HTTP_PROVIDERS } from '@angular/http';
-import { appRouterProviders } from './app/app.routes';
+import { appRouterProviders } from './routes/app.routes';
 
 import { AppComponent } from './app/app.component';
-import { AuthService } from './app/auth/auth.service';
-import { AuthGuard } from './app/auth/auth.guard';
-import { AnonymousGuard } from './app/auth/anonymous.guard';
+import { AuthService } from './services/auth.service';
+import { AuthGuard, AnonymousGuard } from './services/guard.service';
 
 if (process.env.ENV === 'production') {
      enableProdMode();
