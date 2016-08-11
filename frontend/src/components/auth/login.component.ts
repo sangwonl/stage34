@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -7,11 +8,11 @@ import { AuthService } from '../../services/auth.service';
     styleUrls: ['login.component.css']
 })
 export class LoginComponent implements OnInit {
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, private router: Router) {}
 
     ngOnInit() {}
 
     login() {
-        this.authService.login();
+        this.authService.login().toPromise().then(() => { this.router.navigate(['/dash']); });
     }
 }
