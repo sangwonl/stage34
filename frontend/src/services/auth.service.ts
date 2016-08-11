@@ -8,7 +8,7 @@ import 'rxjs/add/operator/delay';
 export class AuthService {
     constructor() {}
 
-    isLoggedIn: boolean = false;
+    isLoggedIn: boolean = true; //false;
 
     redirectUrl: string;
 
