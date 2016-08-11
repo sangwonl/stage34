@@ -4,7 +4,8 @@ import { ROUTER_DIRECTIVES }  from '@angular/router';
 import { DashComponent } from '../components/dash/dash.component';
 import { LoginComponent } from '../components/auth/login.component';
 
-import 'bootstrap/dist/css/bootstrap.css';
+import 'jquery';
+import 'bootstrap-loader';
 import 'font-awesome/css/font-awesome.css';
 import 'bootstrap-social/bootstrap-social.css';
 

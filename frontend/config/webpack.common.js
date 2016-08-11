@@ -2,6 +2,7 @@ var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var helpers = require('./helpers');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
     entry: {
@@ -27,7 +28,7 @@ module.exports = {
         }, {
             test: /\.css$/,
             exclude: helpers.root('src'),
-            loader: ExtractTextPlugin.extract('style', 'css?sourceMap')
+            loader: "style-loader!css-loader?sourceMap"
         }, {
             test: /\.css$/,
             include: helpers.root('src'),
@@ -44,8 +45,16 @@ module.exports = {
         }, {
             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
             loader: 'url?limit=10000&mimetype=image/svg+xml'
+        }, {
+            test: /\.scss$/,
+            loaders: ['style', 'css', 'postcss', 'sass']
+        }, {
+            test: /bootstrap\/dist\/js\//,
+            loader: 'imports?jQuery=jquery'
         }]
     },
+
+    postcss: [autoprefixer],
 
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
@@ -57,7 +66,9 @@ module.exports = {
         }),
 
         new webpack.ProvidePlugin({
+            'window.jQuery': 'jquery',
             jQuery: 'jquery',
+            jquery: 'jquery',
             $: 'jquery'
         })
     ]
