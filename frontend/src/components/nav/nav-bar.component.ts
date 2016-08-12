@@ -3,8 +3,8 @@ import { Router, ROUTER_DIRECTIVES } from '@angular/router';
 
 @Component({
     selector: 'nav-bar',
-    templateUrl: 'nav.component.html',
-    styleUrls: ['nav.component.css'],
+    templateUrl: 'nav-bar.component.html',
+    styleUrls: ['nav-bar.component.css'],
     directives: [ROUTER_DIRECTIVES]
 })
 export class NavBarComponent implements OnInit {
