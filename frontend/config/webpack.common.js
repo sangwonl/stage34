@@ -23,9 +23,6 @@ module.exports = {
             test: /\.html$/,
             loader: 'html'
         }, {
-            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
-            loader: 'file?name=assets/[name].[hash].[ext]'
-        }, {
             test: /\.css$/,
             exclude: helpers.root('src'),
             loader: "style-loader!css-loader?sourceMap"
@@ -33,6 +30,12 @@ module.exports = {
             test: /\.css$/,
             include: helpers.root('src'),
             loader: 'raw'
+        }, {
+            test: /\.scss$/,
+            loaders: ['style', 'css', 'postcss', 'sass']
+        }, {
+            test: /\.(png|jpe?g|gif|ico)$/,
+            loader: 'file?name=assets/[name].[hash].[ext]'
         }, {
             test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, 
             loader: 'url?limit=10000&mimetype=application/font-woff'
@@ -46,10 +49,7 @@ module.exports = {
             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
             loader: 'url?limit=10000&mimetype=image/svg+xml'
         }, {
-            test: /\.scss$/,
-            loaders: ['style', 'css', 'postcss', 'sass']
-        }, {
-            test: /bootstrap\/dist\/js\//,
+            test: /bootstrap\/dist\/js\/\.js$/,
             loader: 'imports?jQuery=jquery'
         }]
     },
