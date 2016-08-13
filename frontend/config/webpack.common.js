@@ -17,39 +17,39 @@ module.exports = {
 
     module: {
         loaders: [{
-            test: /\.ts$/,
+            test: /\.ts/,
             loaders: ['ts', 'angular2-template-loader']
         }, {
-            test: /\.html$/,
+            test: /\.html/,
             loader: 'html'
         }, {
-            test: /\.css$/,
+            test: /\.(png|jpe?g|gif|ico)/,
+            loader: 'file?name=assets/[name].[hash].[ext]'
+        }, {
+            test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?/,
+            loader: 'url?limit=10000&mimetype=application/font-woff'
+        }, {
+            test: /\.ttf(\?v=\d+\.\d+\.\d+)?/,
+            loader: 'url?limit=10000&mimetype=application/octet-stream'
+        }, {
+            test: /\.eot(\?v=\d+\.\d+\.\d+)?/,
+            loader: 'file'
+        }, {
+            test: /\.svg(\?v=\d+\.\d+\.\d+)?/,
+            loader: 'url?limit=10000&mimetype=image/svg+xml'
+        }, {
+            test: /\.css/,
             exclude: helpers.root('src'),
             loader: "style-loader!css-loader?sourceMap"
         }, {
-            test: /\.css$/,
+            test: /\.css/,
             include: helpers.root('src'),
             loader: 'raw'
         }, {
-            test: /\.scss$/,
+            test: /\.scss/,
             loaders: ['style', 'css', 'postcss', 'sass']
         }, {
-            test: /\.(png|jpe?g|gif|ico)$/,
-            loader: 'file?name=assets/[name].[hash].[ext]'
-        }, {
-            test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, 
-            loader: 'url?limit=10000&mimetype=application/font-woff'
-        }, {
-            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-            loader: 'url?limit=10000&mimetype=application/octet-stream'
-        }, {
-            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-            loader: 'file'
-        }, {
-            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-            loader: 'url?limit=10000&mimetype=image/svg+xml'
-        }, {
-            test: /bootstrap\/dist\/js\/\.js$/,
+            test: /bootstrap\/dist\/js\/\.js/,
             loader: 'imports?jQuery=jquery'
         }]
     },
