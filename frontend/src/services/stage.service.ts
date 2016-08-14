@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { Headers, RequestOptions, Http } from '@angular/http';
 
 import { Stage } from '../models/stage';
 
@@ -19,10 +19,21 @@ export class StageService {
     }
 
     getStage(id: number) {
-        let url = `${apiBase}/${id}`;
+        let url = `${apiBase}/stages/${id}`;
         return this.http.get(url)
             .toPromise()
             .then(response => response.json().data as Stage)
+            .catch(this.handleError);
+    }
+
+    toggleStatus(stage: Stage) {
+        let url = `${apiBase}/stages/${stage.id}`;
+        let body = JSON.stringify(stage);
+        let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        return this.http.put(url, body, options)
+            .toPromise()
+            .then(response => response)
             .catch(this.handleError);
     }
 
