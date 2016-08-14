@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewContainerRef } from '@angular/core';
 import { ROUTER_DIRECTIVES }  from '@angular/router';
 
 import { DashComponent } from '../components/dash/dash.component';
@@ -16,4 +16,10 @@ import '../../public/css/styles.css';
         LoginComponent
     ]
 })
-export class AppComponent {}
+export class AppComponent {
+    private viewContainerRef:ViewContainerRef;
+
+    public constructor(viewContainerRef: ViewContainerRef) {
+        this.viewContainerRef = viewContainerRef;
+    }
+}
