@@ -43,6 +43,8 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
+    "moment": "^2.14.1",
+    "ng2-bootstrap": "^1.0.24",
     "node-sass": "^3.8.0",
     "normalize.css": "^4.2.0",
     "null-loader": "^0.1.1",
