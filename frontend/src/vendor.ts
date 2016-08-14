@@ -22,5 +22,6 @@ import 'rxjs/add/operator/switchMap';
 // You can import js, ts, css, sass, ...
 import 'jquery';
 import 'bootstrap-loader';
+import 'normalize.css/normalize.css';
 import 'font-awesome/css/font-awesome.css';
 import 'bootstrap-social/bootstrap-social.css';

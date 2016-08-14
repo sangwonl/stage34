@@ -1,0 +1,15 @@
+<div class="stage-card">
+    <div class="stage-header">
+        <p class="stage-title">{{ stage.title }}</p>
+    </div>
+    <div class="stage-body">
+        <p class="stage-repo">{{ stage.repo }}</p>
+        <p class="stage-branch">{{ stage.branch }}</p>
+        <p class="stage-commits">{{ stage.commits }} commits</p>
+        <p class="stage-created-at">{{ stage.created_ts | amTimeAgo }}</p>
+    </div>
+    <div class="stage-footer">
+        <span class="stage-conn-info"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+        <span class="stage-status"><i class="fa" [ngClass]="{'fa-stop': stage.status == 'running', 'fa-play': stage.status =='paused'}" aria-hidden="true"></i></span>
+    </div> 
+</div>
