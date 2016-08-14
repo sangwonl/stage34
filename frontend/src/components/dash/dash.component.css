@@ -1,2 +1,4 @@
-.stage-card {
+li {
+    list-style: none;
+    float: left;
 }

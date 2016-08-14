@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { StageService } from '../../services/stage.service';
 import { NavBarComponent } from '../nav/nav-bar.component';
 
+import { StageCardComponent } from './card/stage-card.component';
 import { Stage } from '../../models/Stage';
 
 @Component({
@@ -10,7 +11,7 @@ import { Stage } from '../../models/Stage';
     templateUrl: 'dash.component.html',
     styleUrls: ['dash.component.css'],
     providers: [StageService],
-    directives: [NavBarComponent]
+    directives: [NavBarComponent, StageCardComponent]
 })
 export class DashComponent implements OnInit {
     stages: Stage[];

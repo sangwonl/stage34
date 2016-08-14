@@ -8,9 +8,13 @@ import 'rxjs/add/operator/delay';
 export class AuthService {
     constructor() {}
 
-    isLoggedIn: boolean = false;
+    isLoggedIn: boolean = true; //false;
 
     redirectUrl: string;
+
+    isAuthenticated() {
+        return this.isLoggedIn;
+    }
 
     login() {
         // let jwt = 'aaa';

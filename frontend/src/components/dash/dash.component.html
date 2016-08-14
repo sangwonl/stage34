@@ -1,10 +1,10 @@
 <nav-bar></nav-bar>
 
 <!-- grid dash -->
-<div class="container">
+<div class="container-fluid">
     <ul>
-        <li class="col-sm-4 stage-card" *ngFor="let stage of stages">
-            {{ stage.title }}
+        <li *ngFor="let stage of stages">
+            <stage-card [stage]="stage"></stage-card>
         </li>
     </ul>
 </div>

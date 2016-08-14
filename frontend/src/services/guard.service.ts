@@ -8,7 +8,7 @@ export class AuthGuard implements CanActivate {
     constructor(private authService: AuthService, private router: Router) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (this.authService.isLoggedIn) { return true; }
+        if (this.authService.isAuthenticated()) { return true; }
 
         // Store the attempted URL for redirecting
         this.authService.redirectUrl = state.url;
@@ -26,7 +26,7 @@ export class AnonymousGuard implements CanActivate {
     constructor(private authService: AuthService, private router: Router) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (!this.authService.isLoggedIn) { return true; }
+        if (!this.authService.isAuthenticated()) { return true; }
 
         // Navigate to the home page
         this.router.navigate(['/']);
