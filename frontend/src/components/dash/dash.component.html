@@ -4,7 +4,10 @@
 <div class="container-fluid">
     <ul>
         <li *ngFor="let stage of stages">
-            <stage-card [stage]="stage" (infoClick)="onStageInfoClicked($event)"></stage-card>
+            <stage-card [stage]="stage"
+                (infoClick)="onStageInfoClicked($event)"
+                (statusClick)="onStageStatusClicked($event)">
+            </stage-card>
         </li>
     </ul>
 </div>

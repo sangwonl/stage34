@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { StageService } from '../../../services/stage.service';
 import { Stage } from '../../../models/Stage';
 
 import { TimeAgoPipe } from 'angular2-moment';
@@ -9,18 +8,22 @@ import { TimeAgoPipe } from 'angular2-moment';
     selector: 'stage-card',
     templateUrl: 'stage-card.component.html',
     styleUrls: ['stage-card.component.css'],
-    providers: [StageService],
     pipes: [TimeAgoPipe]
 })
 export class StageCardComponent implements OnInit {
     @Input() stage: Stage;
     @Output() infoClick = new EventEmitter();
+    @Output() statusClick = new EventEmitter();
 
-    constructor(private stageService: StageService) {}
+    constructor() {}
 
     ngOnInit() {}
 
     onInfoClicked() {
         this.infoClick.emit({value: this.stage});
+    }
+
+    onStatusClicked() {
+        this.statusClick.emit({value: this.stage});
     }
 }

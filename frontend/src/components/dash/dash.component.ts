@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Response } from '@angular/http';
 
 import { StageService } from '../../services/stage.service';
 import { NavBarComponent } from '../nav/nav-bar.component';
@@ -26,5 +27,19 @@ export class DashComponent implements OnInit {
 
     onStageInfoClicked(event: any) {
         this.stageInfoModal.showModal(event.value);
+    }
+
+    onStageStatusClicked(event: any) {
+        let stage: Stage = event.value;
+        let stageId: number = stage.id;
+
+        let statusMap: any = {'running': 'paused', 'paused': 'running'};
+        let stageCopy: Stage = Object.assign({}, stage);
+        stageCopy.status = statusMap[stage.status];
+
+        this.stageService.toggleStatus(stageCopy).then((response: Response) => {
+            console.log(response);
+            stage.status = stageCopy.status;
+        });
     }
 }

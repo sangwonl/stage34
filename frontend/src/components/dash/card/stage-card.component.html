@@ -9,7 +9,11 @@
         <p class="stage-created-at">{{ stage.created_ts | amTimeAgo }}</p>
     </div>
     <div class="stage-footer">
-        <span class="stage-info" (click)="onInfoClicked()"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
-        <span class="stage-status"><i class="fa" [ngClass]="{'fa-stop': stage.status == 'running', 'fa-play': stage.status =='paused'}" aria-hidden="true"></i></span>
+        <span class="stage-info" (click)="onInfoClicked()">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+        </span>
+        <span class="stage-status" (click)="onStatusClicked()">
+            <i class="fa" [ngClass]="{'fa-stop': stage.status == 'running', 'fa-play': stage.status =='paused'}" aria-hidden="true"></i>
+        </span>
     </div> 
 </div>
