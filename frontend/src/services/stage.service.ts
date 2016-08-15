@@ -26,6 +26,29 @@ export class StageService {
             .catch(this.handleError);
     }
 
+    newStage(title: string, repo: string, branch: string): Stage {
+        let stage = new Stage;
+        stage.title = title;
+        stage.repo = repo;
+        stage.branch = branch;
+        stage.status = 'paused';
+        stage.commits = 0;
+        stage.created_ts = new Date().getTime();
+        stage.connect_info = 'not provisioned yet';
+        return stage;
+    }
+
+    createStage(stageInfo: any) {
+        let url = `${apiBase}/stages`;
+        let body = JSON.stringify(this.newStage(stageInfo.title, stageInfo.repo, stageInfo.branch));
+        let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        return this.http.post(url, body, options)
+            .toPromise()
+            .then(response => response.json().data as Stage)
+            .catch(this.handleError);
+    }
+
     toggleStatus(stage: Stage) {
         let url = `${apiBase}/stages/${stage.id}`;
         let body = JSON.stringify(stage);

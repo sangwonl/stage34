@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Response } from '@angular/http';
 
 import { StageService } from '../../services/stage.service';
 import { NavBarComponent } from '../nav/nav-bar.component';
@@ -29,6 +28,10 @@ export class DashComponent implements OnInit {
     constructor(private stageService: StageService) {}
 
     ngOnInit() {
+        this.refreshStages();
+    }
+
+    refreshStages() {
         this.stageService.getStages()
             .then(stages => this.stages = stages);
     }
@@ -45,7 +48,7 @@ export class DashComponent implements OnInit {
         let stageCopy: Stage = Object.assign({}, stage);
         stageCopy.status = statusMap[stage.status];
 
-        this.stageService.toggleStatus(stageCopy).then((response: Response) => {
+        this.stageService.toggleStatus(stageCopy).then(response => {
             console.log(response);
             stage.status = stageCopy.status;
         });
@@ -56,6 +59,13 @@ export class DashComponent implements OnInit {
     }
 
     onCreateNewStage(event: any) {
-        console.log(event.value);
+        let newStageInfo = event.value;
+        let runOnClose = newStageInfo.runOnClose;
+        delete newStageInfo['runOnClose'];
+
+        this.stageService.createStage(newStageInfo).then(stage => {
+            console.log(stage); 
+            this.refreshStages();
+        })
     }
 }

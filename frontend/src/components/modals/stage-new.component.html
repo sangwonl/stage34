@@ -10,8 +10,12 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
+                      <label for="title">Title</label>
+                      <input type="text" placeholder="Give a name" id="title" class="form-control" [(ngModel)]="title">
+                    </div>                
+                    <div class="form-group">
                       <label for="repo-selector">Repository</label>
-                      <select id="repo-selector" class="form-control" [(ngModel)]="repository">
+                      <select id="repo-selector" class="form-control" [(ngModel)]="repo">
                         <option value="">Choose the repository</option>
                         <option>repo-1</option>
                         <option>repo-2</option>

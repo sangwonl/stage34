@@ -11,7 +11,8 @@ import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstr
     styleUrls: ['stage-new.component.css']
 })
 export class StageNewComponent implements AfterViewInit {
-    repository: string = '';
+    title: string = '';
+    repo: string = '';
     branch: string = '';
     runOnClose: boolean = true;
 
@@ -27,10 +28,12 @@ export class StageNewComponent implements AfterViewInit {
     private onSubmit() {
         this.createNew.emit({
             value: {
-                repository: this.repository,
+                title: this.title,
+                repo: this.repo,
                 branch: this.branch,
                 runOnClose: this.runOnClose
             }
         });
+        this.hideModal();
     }
 }
