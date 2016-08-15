@@ -6,7 +6,7 @@ import { NavBarComponent } from '../nav/nav-bar.component';
 import { StageCardComponent } from './card/stage-card.component';
 import { StageInfoComponent } from '../modals/stage-info.component';
 import { StageNewComponent } from '../modals/stage-new.component';
-import { Stage } from '../../models/Stage';
+import { Stage } from '../../models/stage';
 
 @Component({
     selector: 'dashboard',
@@ -41,16 +41,10 @@ export class DashComponent implements OnInit {
     }
 
     onToggleStageStatus(event: any) {
-        let stage: Stage = event.value;
-        let stageId: number = stage.id;
-
-        let statusMap: any = {'running': 'paused', 'paused': 'running'};
-        let stageCopy: Stage = Object.assign({}, stage);
-        stageCopy.status = statusMap[stage.status];
-
-        this.stageService.toggleStatus(stageCopy).then(response => {
-            console.log(response);
-            stage.status = stageCopy.status;
+        let targetStage: Stage = event.value;
+        this.stageService.toggleStatus(targetStage).then(stage => {
+            targetStage.status = stage.status;   
+            // this.refreshStages();
         });
     }
 
@@ -64,7 +58,6 @@ export class DashComponent implements OnInit {
         delete newStageInfo['runOnClose'];
 
         this.stageService.createStage(newStageInfo).then(stage => {
-            console.log(stage); 
             this.refreshStages();
         })
     }

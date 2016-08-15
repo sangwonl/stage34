@@ -1,5 +1,6 @@
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { enableProdMode } from '@angular/core';
+import { disableDeprecatedForms, provideForms } from '@angular/forms';
 
 import { HTTP_PROVIDERS, XHRBackend } from '@angular/http';
 import { appRouterProviders } from './routes/app.routes';
@@ -21,6 +22,8 @@ bootstrap(AppComponent, [
     AuthGuard,
     AnonymousGuard,
     appRouterProviders,
+    disableDeprecatedForms(),
+    provideForms(),
     { provide: XHRBackend, useClass: InMemoryBackendService },
     { provide: SEED_DATA, useClass: InMemoryDataService }
 ]);

@@ -8,34 +8,38 @@
                 <h4 class="modal-title">Add New Stage</h4>
             </div>
             <div class="modal-body">
-                <form>
+                <form (ngSubmit)="onSubmit()">
                     <div class="form-group">
-                      <label for="title">Title</label>
-                      <input type="text" placeholder="Give a name" id="title" class="form-control" [(ngModel)]="title">
-                    </div>                
-                    <div class="form-group">
-                      <label for="repo-selector">Repository</label>
-                      <select id="repo-selector" class="form-control" [(ngModel)]="repo">
-                        <option value="">Choose the repository</option>
-                        <option>repo-1</option>
-                        <option>repo-2</option>
-                      </select>
+                        <label for="title">Title</label>
+                        <input type="text" placeholder="Give a name" class="form-control"
+                            id="title" name="title" [(ngModel)]="title">
                     </div>
                     <div class="form-group">
-                      <label for="branch-selector">Branch</label>
-                      <select id="branch-selector" class="form-control" [(ngModel)]="branch">
-                        <option value="">Choose the branch</option>
-                        <option>branch-1</option>
-                        <option>branch-2</option>
-                      </select>
+                        <label for="repo-selector">Repository</label>
+                        <select id="repo-selector" class="form-control"
+                            name="repo" [(ngModel)]="repo">
+                            <option value="">Choose the repository</option>
+                            <option>repo-1</option>
+                            <option>repo-2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="branch-selector">Branch</label>
+                        <select id="branch-selector" class="form-control"
+                            name="branch" [(ngModel)]="branch">
+                            <option value="">Choose the branch</option>
+                            <option>branch-1</option>
+                            <option>branch-2</option>
+                        </select>
                     </div>
                     <div class="checkbox">
-                      <label>
-                        <input type="checkbox" [(ngModel)]="runOnClose">Run on close
-                      </label>
+                        <label>
+                            <input type="checkbox" name="run-on-close"
+                                [(ngModel)]="runOnClose">Run on close
+                        </label>
                     </div>
                     <div class="form-group form-btn-group">
-                        <button class="btn btn-primary" (click)="onSubmit()">Create</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
                         <button class="btn btn-default" (click)="hideModal()">Cancel</button>
                     </div>
                 </form>

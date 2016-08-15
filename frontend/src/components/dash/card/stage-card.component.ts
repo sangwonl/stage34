@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { Stage } from '../../../models/Stage';
+import { Stage } from '../../../models/stage';
 
 import { TimeAgoPipe } from 'angular2-moment';
 

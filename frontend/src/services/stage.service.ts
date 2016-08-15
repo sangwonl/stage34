@@ -39,8 +39,9 @@ export class StageService {
     }
 
     createStage(stageInfo: any) {
+        let newStage = this.newStage(stageInfo.title, stageInfo.repo, stageInfo.branch); 
         let url = `${apiBase}/stages`;
-        let body = JSON.stringify(this.newStage(stageInfo.title, stageInfo.repo, stageInfo.branch));
+        let body = JSON.stringify(newStage);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
         return this.http.post(url, body, options)
@@ -50,13 +51,17 @@ export class StageService {
     }
 
     toggleStatus(stage: Stage) {
+        let statusToggleMap: any = {'running': 'paused', 'paused': 'running'};
+        let stageCopy: Stage = Object.assign({}, stage);
+        stageCopy.status = statusToggleMap[stage.status];
+
         let url = `${apiBase}/stages/${stage.id}`;
-        let body = JSON.stringify(stage);
+        let body = JSON.stringify(stageCopy);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
         return this.http.put(url, body, options)
             .toPromise()
-            .then(response => response)
+            .then(response => { return response.status == 204 ? stageCopy : stage; })
             .catch(this.handleError);
     }
 
