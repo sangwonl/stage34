@@ -9,6 +9,11 @@
                 (statusClick)="onStageStatusClicked($event)">
             </stage-card>
         </li>
+        <li>
+            <stage-card [forNew]="true"
+                (newClick)="onStageNewClicked($event)">
+            </stage-card>
+        </li>
     </ul>
 </div>
 

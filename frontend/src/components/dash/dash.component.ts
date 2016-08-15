@@ -42,4 +42,8 @@ export class DashComponent implements OnInit {
             stage.status = stageCopy.status;
         });
     }
+
+    onStageNewClicked(event: any) {
+        alert('sss'); 
+    }
 }
