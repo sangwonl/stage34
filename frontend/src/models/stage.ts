@@ -4,5 +4,7 @@ export class Stage {
     repo: string;
     branch: string;
     status: string;
+    commits: number;
     created_ts: number;
+    connect_info: string;   
 }

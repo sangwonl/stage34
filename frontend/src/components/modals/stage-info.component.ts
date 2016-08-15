@@ -3,7 +3,7 @@ import { CORE_DIRECTIVES } from '@angular/common';
 
 import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstrap';
 
-import { Stage } from '../../../models/stage';
+import { Stage } from '../../models/stage';
 
 @Component({
     selector: 'stage-info',

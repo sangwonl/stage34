@@ -1,4 +1,4 @@
-<div class="stage-card">
+<div *ngIf="!forNew" class="stage-card">
     <div class="stage-header">
         <p class="stage-title">{{ stage.title }}</p>
     </div>
@@ -10,10 +10,16 @@
     </div>
     <div class="stage-footer">
         <span class="stage-info" (click)="onInfoClicked()">
-            <i class="fa fa-info-circle" aria-hidden="true"></i>
+            <i class="fa fa-plug" aria-hidden="true"></i>
         </span>
         <span class="stage-status" (click)="onStatusClicked()">
-            <i class="fa" [ngClass]="{'fa-stop': stage.status == 'running', 'fa-play': stage.status =='paused'}" aria-hidden="true"></i>
+            <i class="fa" [ngClass]="statusIconClass()" aria-hidden="true"></i>
         </span>
-    </div> 
+    </div>    
+</div>
+
+<div *ngIf="forNew" class="stage-card" (click)="onNewClicked()">
+    <div class="stage-new">
+        <span><i class="fa fa-plus fa-3x" aria-hiden="true"></i></span>
+    </div>
 </div>

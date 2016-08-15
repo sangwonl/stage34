@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { Stage } from '../../../models/Stage';
+import { Stage } from '../../../models/stage';
 
 import { TimeAgoPipe } from 'angular2-moment';
 
@@ -12,18 +12,32 @@ import { TimeAgoPipe } from 'angular2-moment';
 })
 export class StageCardComponent implements OnInit {
     @Input() stage: Stage;
-    @Output() infoClick = new EventEmitter();
-    @Output() statusClick = new EventEmitter();
+    @Input() forNew: boolean = false;
+
+    @Output() showInfo = new EventEmitter();
+    @Output() toggleStatus = new EventEmitter();
+    @Output() addNew = new EventEmitter();
 
     constructor() {}
 
     ngOnInit() {}
 
+    statusIconClass() {
+        return {
+            'fa-stop': this.stage.status == 'running',
+            'fa-play': this.stage.status =='paused'
+        }
+    }
+
     onInfoClicked() {
-        this.infoClick.emit({value: this.stage});
+        this.showInfo.emit({value: this.stage});
     }
 
     onStatusClicked() {
-        this.statusClick.emit({value: this.stage});
+        this.toggleStatus.emit({value: this.stage});
+    }
+
+    onNewClicked() {
+        this.addNew.emit({});
     }
 }

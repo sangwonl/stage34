@@ -26,14 +26,42 @@ export class StageService {
             .catch(this.handleError);
     }
 
+    newStage(title: string, repo: string, branch: string): Stage {
+        let stage = new Stage;
+        stage.title = title;
+        stage.repo = repo;
+        stage.branch = branch;
+        stage.status = 'paused';
+        stage.commits = 0;
+        stage.created_ts = new Date().getTime();
+        stage.connect_info = 'not provisioned yet';
+        return stage;
+    }
+
+    createStage(stageInfo: any) {
+        let newStage = this.newStage(stageInfo.title, stageInfo.repo, stageInfo.branch); 
+        let url = `${apiBase}/stages`;
+        let body = JSON.stringify(newStage);
+        let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        return this.http.post(url, body, options)
+            .toPromise()
+            .then(response => response.json().data as Stage)
+            .catch(this.handleError);
+    }
+
     toggleStatus(stage: Stage) {
+        let statusToggleMap: any = {'running': 'paused', 'paused': 'running'};
+        let stageCopy: Stage = Object.assign({}, stage);
+        stageCopy.status = statusToggleMap[stage.status];
+
         let url = `${apiBase}/stages/${stage.id}`;
-        let body = JSON.stringify(stage);
+        let body = JSON.stringify(stageCopy);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
         return this.http.put(url, body, options)
             .toPromise()
-            .then(response => response)
+            .then(response => { return response.status == 204 ? stageCopy : stage; })
             .catch(this.handleError);
     }
 
