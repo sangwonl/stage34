@@ -33,11 +33,11 @@ export class DashComponent implements OnInit {
             .then(stages => this.stages = stages);
     }
 
-    onStageInfoClicked(event: any) {
+    onShowStageInfo(event: any) {
         this.stageInfoModal.showModal(event.value);
     }
 
-    onStageStatusClicked(event: any) {
+    onToggleStageStatus(event: any) {
         let stage: Stage = event.value;
         let stageId: number = stage.id;
 
@@ -51,7 +51,7 @@ export class DashComponent implements OnInit {
         });
     }
 
-    onStageNewClicked(event: any) {
+    onAddNewStage(event: any) {
         this.stageNewModal.showModal();
     }
 }

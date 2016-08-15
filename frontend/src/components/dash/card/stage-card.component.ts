@@ -13,23 +13,24 @@ import { TimeAgoPipe } from 'angular2-moment';
 export class StageCardComponent implements OnInit {
     @Input() stage: Stage;
     @Input() forNew: boolean = false;
-    @Output() infoClick = new EventEmitter();
-    @Output() statusClick = new EventEmitter();
-    @Output() newClick = new EventEmitter();
+
+    @Output() showInfo = new EventEmitter();
+    @Output() toggleStatus = new EventEmitter();
+    @Output() addNew = new EventEmitter();
 
     constructor() {}
 
     ngOnInit() {}
 
     onInfoClicked() {
-        this.infoClick.emit({value: this.stage});
+        this.showInfo.emit({value: this.stage});
     }
 
     onStatusClicked() {
-        this.statusClick.emit({value: this.stage});
+        this.toggleStatus.emit({value: this.stage});
     }
 
     onNewClicked() {
-        this.newClick.emit({});
+        this.addNew.emit({});
     }
 }

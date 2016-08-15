@@ -5,13 +5,13 @@
     <ul>
         <li *ngFor="let stage of stages">
             <stage-card [stage]="stage"
-                (infoClick)="onStageInfoClicked($event)"
-                (statusClick)="onStageStatusClicked($event)">
+                (showInfo)="onShowStageInfo($event)"
+                (toggleStatus)="onToggleStageStatus($event)">
             </stage-card>
         </li>
         <li>
             <stage-card [forNew]="true"
-                (newClick)="onStageNewClicked($event)">
+                (addNew)="onAddNewStage($event)">
             </stage-card>
         </li>
     </ul>
