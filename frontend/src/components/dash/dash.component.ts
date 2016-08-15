@@ -5,7 +5,7 @@ import { StageService } from '../../services/stage.service';
 import { NavBarComponent } from '../nav/nav-bar.component';
 
 import { StageCardComponent } from './card/stage-card.component';
-import { StageInfoComponent } from './info/stage-info.component';
+import { StageInfoComponent } from '../modals/stage-info.component';
 import { Stage } from '../../models/Stage';
 
 @Component({
