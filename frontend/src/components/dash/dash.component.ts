@@ -6,6 +6,7 @@ import { NavBarComponent } from '../nav/nav-bar.component';
 
 import { StageCardComponent } from './card/stage-card.component';
 import { StageInfoComponent } from '../modals/stage-info.component';
+import { StageNewComponent } from '../modals/stage-new.component';
 import { Stage } from '../../models/Stage';
 
 @Component({
@@ -13,16 +14,23 @@ import { Stage } from '../../models/Stage';
     templateUrl: 'dash.component.html',
     styleUrls: ['dash.component.css'],
     providers: [StageService],
-    directives: [NavBarComponent, StageCardComponent, StageInfoComponent]
+    directives: [
+        NavBarComponent,
+        StageCardComponent,
+        StageInfoComponent,
+        StageNewComponent
+    ]
 })
 export class DashComponent implements OnInit {
     @ViewChild('stageInfoModal') stageInfoModal: StageInfoComponent;
+    @ViewChild('stageNewModal') stageNewModal: StageNewComponent;
     stages: Stage[];
 
     constructor(private stageService: StageService) {}
 
     ngOnInit() {
-        this.stageService.getStages().then(stages => this.stages = stages);
+        this.stageService.getStages()
+            .then(stages => this.stages = stages);
     }
 
     onStageInfoClicked(event: any) {
@@ -44,6 +52,6 @@ export class DashComponent implements OnInit {
     }
 
     onStageNewClicked(event: any) {
-        alert('sss'); 
+        this.stageNewModal.showModal();
     }
 }
