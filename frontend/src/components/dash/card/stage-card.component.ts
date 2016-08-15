@@ -22,6 +22,13 @@ export class StageCardComponent implements OnInit {
 
     ngOnInit() {}
 
+    statusIconClass() {
+        return {
+            'fa-stop': this.stage.status == 'running',
+            'fa-play': this.stage.status =='paused'
+        }
+    }
+
     onInfoClicked() {
         this.showInfo.emit({value: this.stage});
     }

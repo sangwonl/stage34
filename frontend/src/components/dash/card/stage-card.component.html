@@ -13,7 +13,7 @@
             <i class="fa fa-plug" aria-hidden="true"></i>
         </span>
         <span class="stage-status" (click)="onStatusClicked()">
-            <i class="fa" [ngClass]="{'fa-stop': stage.status == 'running', 'fa-play': stage.status =='paused'}" aria-hidden="true"></i>
+            <i class="fa" [ngClass]="statusIconClass()" aria-hidden="true"></i>
         </span>
     </div>    
 </div>
