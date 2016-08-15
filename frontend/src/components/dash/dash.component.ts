@@ -54,4 +54,8 @@ export class DashComponent implements OnInit {
     onAddNewStage(event: any) {
         this.stageNewModal.showModal();
     }
+
+    onCreateNewStage(event: any) {
+        console.log(event.value);
+    }
 }

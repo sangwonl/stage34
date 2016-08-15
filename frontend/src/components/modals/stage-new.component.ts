@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
 import { CORE_DIRECTIVES } from '@angular/common';
 
 import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstrap';
@@ -11,11 +11,26 @@ import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstr
     styleUrls: ['stage-new.component.css']
 })
 export class StageNewComponent implements AfterViewInit {
+    repository: string = '';
+    branch: string = '';
+    runOnClose: boolean = true;
+
     @ViewChild('newModal') newModal: ModalDirective;
+
+    @Output() createNew = new EventEmitter();
  
     ngAfterViewInit() {}
 
-    public showModal() {this.newModal.show(); }
-
+    public showModal() { this.newModal.show(); }
     public hideModal() { this.newModal.hide(); }
+
+    private onSubmit() {
+        this.createNew.emit({
+            value: {
+                repository: this.repository,
+                branch: this.branch,
+                runOnClose: this.runOnClose
+            }
+        });
+    }
 }
