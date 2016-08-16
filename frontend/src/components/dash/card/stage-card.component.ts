@@ -17,6 +17,7 @@ export class StageCardComponent implements OnInit {
     @Output() showInfo = new EventEmitter();
     @Output() toggleStatus = new EventEmitter();
     @Output() addNew = new EventEmitter();
+    @Output() trash = new EventEmitter();
 
     constructor() {}
 
@@ -29,6 +30,10 @@ export class StageCardComponent implements OnInit {
         }
     }
 
+    canTrash() {
+        return this.stage && this.stage.status == 'paused';
+    }
+
     onInfoClicked() {
         this.showInfo.emit({value: this.stage});
     }
@@ -39,5 +44,9 @@ export class StageCardComponent implements OnInit {
 
     onNewClicked() {
         this.addNew.emit({});
+    }
+
+    onTrashClicked() {
+        this.trash.emit({value: this.stage});
     }
 }

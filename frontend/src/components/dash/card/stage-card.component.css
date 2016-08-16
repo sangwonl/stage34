@@ -19,11 +19,20 @@
     background: #f4f4ff;
 }
 
+.stage-header {
+    height: 38px;
+}
+
 .stage-title {
     font-size: 14px;
     font-weight: 400;
     text-align: left;
     margin-bottom: 20px;
+    float: left;
+}
+
+.stage-trash {
+    float: right;
 }
 
 .stage-repo {

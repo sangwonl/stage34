@@ -61,4 +61,12 @@ export class DashComponent implements OnInit {
             this.refreshStages();
         })
     }
+
+    onTrashStage(event: any) {
+        let targetStage: Stage = event.value;
+        this.stageService.deleteStage(targetStage).then(stage => {
+            this.stages = this.stages.filter(s => s !== stage);
+            // this.refreshStages();
+        })
+    }
 }

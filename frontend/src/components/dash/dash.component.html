@@ -6,7 +6,8 @@
         <li *ngFor="let stage of stages">
             <stage-card [stage]="stage"
                 (showInfo)="onShowStageInfo($event)"
-                (toggleStatus)="onToggleStageStatus($event)">
+                (toggleStatus)="onToggleStageStatus($event)"
+                (trash)="onTrashStage($event)">
             </stage-card>
         </li>
         <li>

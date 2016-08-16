@@ -1,6 +1,9 @@
 <div *ngIf="!forNew" class="stage-card">
     <div class="stage-header">
         <p class="stage-title">{{ stage.title }}</p>
+        <span *ngIf="canTrash()" class="stage-trash" (click)="onTrashClicked()">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+        </span>
     </div>
     <div class="stage-body">
         <p class="stage-repo">{{ stage.repo }}</p>
