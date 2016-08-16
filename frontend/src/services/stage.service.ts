@@ -50,6 +50,16 @@ export class StageService {
             .catch(this.handleError);
     }
 
+    deleteStage(stage: Stage) {
+        let url = `${apiBase}/stages/${stage.id}`;
+        let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        return this.http.delete(url, options)
+            .toPromise()
+            .then(response => { return response.status == 204 ? stage : null; })
+            .catch(this.handleError);       
+    }
+
     toggleStatus(stage: Stage) {
         let statusToggleMap: any = {'running': 'paused', 'paused': 'running'};
         let stageCopy: Stage = Object.assign({}, stage);
