@@ -4,9 +4,10 @@
 
 .welcome-title {
     font-family: "LeagueGothicRegular", Lucida, sans-serif;
-    font-size: 90px;
+    font-size: 160px;
     line-height: 1;
     font-weight: bold;
+    text-align: center;
     text-transform: uppercase;
     letter-spacing: -5px;
     background: url(public/images/stage_text_bg.jpg) repeat, white;
@@ -25,7 +26,7 @@
 .login-btn-wrap {
     width: 250px;
     margin: auto;
-    margin-top: 30px;
+    margin-top: 50px;
 }
 
 .login-text {

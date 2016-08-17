@@ -16,6 +16,7 @@ CELERYD_PREFETCH_MULTIPLIER = 4
 CELERYD_MAX_TASKS_PER_CHILD = 10        # pre-forked task pool
 CELERYD_CONCURRENCY = 4                 # # of worker processes
 CELERY_TIMEZONE = 'Asia/Seoul'
+TCELERY_RESULT_NOWAIT = False           # tornado celery nowait option
 CELERYBEAT_SCHEDULE = {
     'hello-every-10s': {
         'task': 'tasks.hello.say_hello',
