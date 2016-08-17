@@ -24,6 +24,6 @@ bootstrap(AppComponent, [
     appRouterProviders,
     disableDeprecatedForms(),
     provideForms(),
-    { provide: XHRBackend, useClass: InMemoryBackendService },
-    { provide: SEED_DATA, useClass: InMemoryDataService }
+    // { provide: XHRBackend, useClass: InMemoryBackendService },
+    // { provide: SEED_DATA, useClass: InMemoryDataService }
 ]);

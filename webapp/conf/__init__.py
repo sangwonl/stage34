@@ -15,7 +15,7 @@ settings = {
         'client_secret': '026219920a2470dbe33af113afe8d781cd154c55',
         'scope': 'user:email,repo',
         'auth_url': 'https://github.com/login/oauth/authorize',
-        'redirect_uri': 'http://localhost:8000/auth/github/callback/'
+        'redirect_uri': 'http://localhost:8000/api/v1/auth/github/callback/'
     }
 }
 

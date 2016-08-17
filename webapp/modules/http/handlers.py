@@ -43,6 +43,9 @@ class BaseHandler(web.RequestHandler):
     def post(self, *args, **kwargs):
         self.handle(self.do_post, *args, **kwargs)
 
+    def set_default_headers(self):
+        self.set_header('Access-Control-Allow-Origin', '*')
+
 
 class AsyncBaseHandler(BaseHandler):
     @gen.coroutine

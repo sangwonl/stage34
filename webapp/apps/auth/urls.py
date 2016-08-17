@@ -2,5 +2,6 @@ import handlers
 
 
 url_patterns = [
-    (r'^/auth/github_auth_url/?$', handlers.GithubAuthUrlHandler),
+    (r'^/api/v1/auth/github_auth_url/?$', handlers.GithubAuthUrlHandler),
+    (r'^/api/v1/auth/github/callback/?$', handlers.GithubCallbackHandler)
 ]

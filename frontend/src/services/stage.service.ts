@@ -3,8 +3,10 @@ import { Headers, RequestOptions, Http } from '@angular/http';
 
 import { Stage } from '../models/stage';
 
-const mocking = process.env.ENV !== 'production';
-const apiBase = mocking ? '/app' : '/api/v1';
+const mocking = false;
+const forProd = process.env.ENV === 'production';
+const apiHost = forProd ? 'http://api.stage34.org': 'http://localhost:8000';
+const apiBase = mocking ? '/app' : `${apiHost}/api/v1`;
 
 @Injectable()
 export class StageService {

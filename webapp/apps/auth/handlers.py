@@ -26,3 +26,15 @@ class GithubAuthUrlHandler(AsyncBaseHandler):
                 urllib.urlencode(query_params))
         })
         raise gen.Return(res)
+
+
+class GithubCallbackHandler(AsyncBaseHandler):
+    @gen.coroutine
+    def do_get(self, *args, **kwargs):
+        code = self.get_argument('code', None)
+        state = self.get_argument('state', None)
+        res = JSONResponse(status=200, data={
+            'code': code,
+            'state': state
+        })
+        raise gen.Return(res)
