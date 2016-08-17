@@ -2,5 +2,5 @@ import handlers
 
 
 url_patterns = [
-    (r'^/auth/social_auth_url/?$', handlers.SocialAuthUrlHandler),
+    (r'^/auth/github_auth_url/?$', handlers.GithubAuthUrlHandler),
 ]
