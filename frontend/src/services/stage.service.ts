@@ -3,17 +3,14 @@ import { Headers, RequestOptions, Http } from '@angular/http';
 
 import { Stage } from '../models/stage';
 
-const mocking = false;
-const forProd = process.env.ENV === 'production';
-const apiHost = forProd ? 'http://api.stage34.org': 'http://localhost:8000';
-const apiBase = mocking ? '/app' : `${apiHost}/api/v1`;
+import { API_BASE } from '../consts';
 
 @Injectable()
 export class StageService {
     constructor(private http: Http) {}
 
     getStages() {
-        let url = `${apiBase}/stages`;
+        let url = `${API_BASE}/stages`;
         return this.http.get(url)
             .toPromise()
             .then(response => response.json().data as Stage[]) 
@@ -21,7 +18,7 @@ export class StageService {
     }
 
     getStage(id: number) {
-        let url = `${apiBase}/stages/${id}`;
+        let url = `${API_BASE}/stages/${id}`;
         return this.http.get(url)
             .toPromise()
             .then(response => response.json().data as Stage)
@@ -42,7 +39,7 @@ export class StageService {
 
     createStage(stageInfo: any) {
         let newStage = this.newStage(stageInfo.title, stageInfo.repo, stageInfo.branch); 
-        let url = `${apiBase}/stages`;
+        let url = `${API_BASE}/stages`;
         let body = JSON.stringify(newStage);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
@@ -53,7 +50,7 @@ export class StageService {
     }
 
     deleteStage(stage: Stage) {
-        let url = `${apiBase}/stages/${stage.id}`;
+        let url = `${API_BASE}/stages/${stage.id}`;
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
         return this.http.delete(url, options)
@@ -67,7 +64,7 @@ export class StageService {
         let stageCopy: Stage = Object.assign({}, stage);
         stageCopy.status = statusToggleMap[stage.status];
 
-        let url = `${apiBase}/stages/${stage.id}`;
+        let url = `${API_BASE}/stages/${stage.id}`;
         let body = JSON.stringify(stageCopy);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });

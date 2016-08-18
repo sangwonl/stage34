@@ -7,14 +7,12 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
 
-const mocking = false;
-const forProd = process.env.ENV === 'production';
-const apiHost = forProd ? 'http://api.stage34.org': 'http://localhost:8000';
-const apiBase = mocking ? '/app' : `${apiHost}/api/v1`;
+import { API_BASE } from '../consts';
 
 @Injectable()
 export class AuthService {
     isLoggedIn: boolean = false;
+    redirectUrl: string;
 
     constructor(private http: Http) {}
 
@@ -23,19 +21,18 @@ export class AuthService {
     }
 
     get_github_auth_url() {
-        let url = `${apiBase}/auth/github_auth_url`;
+        let url = `${API_BASE}/auth/github_auth_url`;
         return this.http.get(url)
             .toPromise()
             .then(response => response.json().data) 
             .catch(this.handleError);        
     }
 
-    redirect(url) {
+    redirect(url: string) {
         window.location.href = url;
     }
 
     login() {
-        console.log(apiBase);
         this.get_github_auth_url().then(data => { this.redirect(data.authorize_url); });
         // let jwt = 'aaa';
         // localStorage.setItem('jwt', jwt);
