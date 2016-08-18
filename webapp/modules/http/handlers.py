@@ -30,7 +30,7 @@ class BaseHandler(web.RequestHandler):
     def process(self, res):
         for name, val in res.headers.iteritems():
             self.set_header(name, val)
-        self.set_status(res.status)
+        self.set_status(res.status_code)
         self.write(res.body)
 
     def handle(self, do_func, *args, **kwargs):

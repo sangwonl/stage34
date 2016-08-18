@@ -2,7 +2,7 @@ from tornado import gen
 from conf import settings
 
 from modules.http.handlers import BaseHandler, AsyncBaseHandler
-from modules.http import JSONResponse
+from modules.http import JSENDSuccess
 
 import uuid
 import urllib
@@ -20,7 +20,7 @@ class GithubAuthUrlHandler(AsyncBaseHandler):
             'response_type': 'code'
         }
 
-        res = JSONResponse(status=200, data={
+        res = JSENDSuccess(status_code=200, data={
             'authorize_url': '%s?%s' % (
                 github_conf.get('auth_url'),
                 urllib.urlencode(query_params))
@@ -33,7 +33,7 @@ class GithubCallbackHandler(AsyncBaseHandler):
     def do_get(self, *args, **kwargs):
         code = self.get_argument('code', None)
         state = self.get_argument('state', None)
-        res = JSONResponse(status=200, data={
+        res = JSENDSuccess(status_code=200, data={
             'code': code,
             'state': state
         })
