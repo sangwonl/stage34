@@ -30,7 +30,7 @@ export class AuthService {
         return user;
     }
 
-    get_github_auth_url() {
+    getGithubAuthUrl() {
         let url = `${STAGE34_HOST_BASE}/auth/github_auth_url`;
         return this.http.get(url)
             .toPromise()
@@ -38,7 +38,7 @@ export class AuthService {
             .catch(this.handleError);        
     }
 
-    post_login(email: string, accessToken: string) {
+    postLogin(email: string, accessToken: string) {
         let newUser = this.newUser(email, accessToken);
         let url = `${STAGE34_HOST_BASE}/auth/login`;
         let body = JSON.stringify(newUser);
@@ -50,16 +50,15 @@ export class AuthService {
             .catch(this.handleError);
     }
 
-    redirect(url: string) {
-        window.location.href = url;
-    }
-
     login() {
-        this.get_github_auth_url().then(data => { this.redirect(data.authorize_url); });
+        this.getGithubAuthUrl().then(data => {
+            // redirect to github authorize url
+            window.location.href = data.authorize_url;
+        });
     }
 
     confirm(email: string, accessToken: string) {
-        return this.post_login(email, accessToken).then(user => {
+        return this.postLogin(email, accessToken).then(user => {
             localStorage.setItem('jwt', user.jwt);
             this.isLoggedIn = true;
             return this.isLoggedIn;
