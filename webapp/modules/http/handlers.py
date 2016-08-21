@@ -38,6 +38,7 @@ class BaseHandler(web.RequestHandler):
 
         for name, val in res.headers.iteritems():
             self.set_header(name, val)
+
         self.set_status(res.status_code)
         self.write(res.body)
 

@@ -8,7 +8,7 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
 
 import { User } from '../models/user';
-import { STAGE34_API_BASE } from '../consts';
+import { STAGE34_HOST_BASE } from '../consts';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +31,7 @@ export class AuthService {
     }
 
     get_github_auth_url() {
-        let url = `${STAGE34_API_BASE}/auth/github_auth_url`;
+        let url = `${STAGE34_HOST_BASE}/auth/github_auth_url`;
         return this.http.get(url)
             .toPromise()
             .then(response => response.json().data) 
@@ -40,7 +40,7 @@ export class AuthService {
 
     post_login(email: string, accessToken: string) {
         let newUser = this.newUser(email, accessToken);
-        let url = `${STAGE34_API_BASE}/auth/login`;
+        let url = `${STAGE34_HOST_BASE}/auth/login`;
         let body = JSON.stringify(newUser);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });

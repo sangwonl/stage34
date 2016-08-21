@@ -18,7 +18,7 @@ settings = {
         'authorize_url': 'https://github.com/login/oauth/authorize',
         'access_token_url': 'https://github.com/login/oauth/access_token',
         'api_base_url': 'https://api.github.com',
-        'redirect_uri': 'http://localhost:8000/api/v1/auth/github/callback/'
+        'redirect_uri': 'http://localhost:8000/auth/github/callback/'
     }
 }
 

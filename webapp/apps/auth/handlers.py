@@ -1,6 +1,6 @@
 from tornado import gen
 
-from modules.http.handlers import BaseHandler, AsyncBaseHandler
+from modules.http.handlers import AsyncBaseHandler
 from modules.http import JSENDSuccess, JSENDError
 from modules.agents.github import GithubAgent
 
