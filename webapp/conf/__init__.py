@@ -14,7 +14,8 @@ settings = {
         'client_id': '7f845815ccbc5c97d622',
         'client_secret': '026219920a2470dbe33af113afe8d781cd154c55',
         'scope': 'user:email,repo',
-        'auth_url': 'https://github.com/login/oauth/authorize',
+        'authorize_url': 'https://github.com/login/oauth/authorize',
+        'access_token_url': 'https://github.com/login/oauth/access_token',
         'redirect_uri': 'http://localhost:8000/api/v1/auth/github/callback/'
     }
 }

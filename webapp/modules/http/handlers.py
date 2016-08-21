@@ -28,6 +28,9 @@ class BaseHandler(web.RequestHandler):
         raise NotImplementedError()
 
     def process(self, res):
+        if res is None:
+            return
+
         for name, val in res.headers.iteritems():
             self.set_header(name, val)
         self.set_status(res.status_code)
@@ -44,7 +47,8 @@ class BaseHandler(web.RequestHandler):
         self.handle(self.do_post, *args, **kwargs)
 
     def set_default_headers(self):
-        self.set_header('Access-Control-Allow-Origin', '*')
+        # self.set_header('Access-Control-Allow-Origin', '*')
+        pass
 
 
 class AsyncBaseHandler(BaseHandler):
