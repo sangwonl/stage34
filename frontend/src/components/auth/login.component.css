@@ -33,3 +33,32 @@
     font-family: Lucida, sans-serif;
     font-weight: 100;
 }
+
+.confirm-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.confirm-email {
+    width: 400px;
+    margin: auto;
+}
+
+.confirm-email p {
+    text-align: center;
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 3em;
+    background-color: yellow;
+}
+
+.confirm-btn-wrap {
+    width: 250px;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.confirm-text {
+    font-family: Lucida, sans-serif;
+    font-weight: 100;
+}

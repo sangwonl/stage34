@@ -2,6 +2,8 @@ from tornado import gen
 from tornado import web
 from tornado import websocket
 
+import json
+
 
 class WSBaseHandler(websocket.WebSocketHandler):
     def __init__(self, application, request, **kwargs):
@@ -20,6 +22,9 @@ class BaseHandler(web.RequestHandler):
 
     def data_received(self, chunk):
         pass
+
+    def get_json_body(self):
+        return json.loads(self.request.body)
 
     def do_get(self, *args, **kwargs):
         raise NotImplementedError()
@@ -63,4 +68,4 @@ class AsyncBaseHandler(BaseHandler):
 
     @gen.coroutine
     def post(self, *args, **kwargs):
-        yield self.handle(self.do_post, *args **kwargs)
+        yield self.handle(self.do_post, *args, **kwargs)

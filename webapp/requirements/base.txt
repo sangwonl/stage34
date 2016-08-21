@@ -3,3 +3,4 @@ tornado-celery==0.3.5
 sqlalchemy==1.0.14
 sqlalchemy-wrapper==1.7.0
 alembic==0.8.7
+PyJWT==1.4.2
