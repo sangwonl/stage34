@@ -26,7 +26,7 @@ class TornadoApplication(web.Application):
         # internal variables..
         self.env = env
         self.host = kwargs.get('host', '0.0.0.0')
-        self.port = kwargs.get('port', 8000)
+        self.port = kwargs.get('port', 8080)
 
         # initialize modules
         self.http_srv = self.setup_http_server()
@@ -88,7 +88,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', nargs='?', default='0.0.0.0')
-    parser.add_argument('--port', nargs='?', default=8000, type=int)
+    parser.add_argument('--port', nargs='?', default=8080, type=int)
     args = parser.parse_args()
 
     app = TornadoApplication(env, host=args.host, port=args.port)

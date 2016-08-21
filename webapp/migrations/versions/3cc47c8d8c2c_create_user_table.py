@@ -22,8 +22,6 @@ def upgrade():
         sa.Column('email', sa.String(128)),
         sa.Column('password', sa.String(128)),
         sa.Column('jwt', sa.String(512)),
-        sa.Column('github_sid', sa.String(128)),
-        sa.Column('github_access_token', sa.String(256)))
 
 
 def downgrade():

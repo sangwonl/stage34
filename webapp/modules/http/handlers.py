@@ -1,7 +1,8 @@
 from tornado import gen
 from tornado import web
 from tornado import websocket
-# from tornado.web import HTTPError
+
+import json
 
 
 class WSBaseHandler(websocket.WebSocketHandler):
@@ -22,15 +23,28 @@ class BaseHandler(web.RequestHandler):
     def data_received(self, chunk):
         pass
 
+    def get_json_body(self):
+        return json.loads(self.request.body)
+
     def do_get(self, *args, **kwargs):
         raise NotImplementedError()
 
     def do_post(self, *args, **kwargs):
         raise NotImplementedError()
 
+    def process(self, res):
+        if res is None:
+            return
+
+        for name, val in res.headers.iteritems():
+            self.set_header(name, val)
+
+        self.set_status(res.status_code)
+        self.write(res.body)
+
     def handle(self, do_func, *args, **kwargs):
         res = do_func(args, kwargs)
-        self.write(res)
+        self.process(res)
 
     def get(self, *args, **kwargs):
         self.handle(self.do_get, *args, **kwargs)
@@ -38,12 +52,16 @@ class BaseHandler(web.RequestHandler):
     def post(self, *args, **kwargs):
         self.handle(self.do_post, *args, **kwargs)
 
+    def set_default_headers(self):
+        # self.set_header('Access-Control-Allow-Origin', '*')
+        pass
+
 
 class AsyncBaseHandler(BaseHandler):
     @gen.coroutine
     def handle(self, do_func, *args, **kwargs):
         res = yield do_func(args, kwargs)
-        self.write(res)
+        self.process(res)
 
     @gen.coroutine
     def get(self, *args, **kwargs):
@@ -51,4 +69,4 @@ class AsyncBaseHandler(BaseHandler):
 
     @gen.coroutine
     def post(self, *args, **kwargs):
-        yield self.handle(self.do_post, *args **kwargs)
+        yield self.handle(self.do_post, *args, **kwargs)

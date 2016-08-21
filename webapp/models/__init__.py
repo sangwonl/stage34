@@ -9,5 +9,6 @@ class User(db.Model):
     email = db.Column(db.String(128))
     password = db.Column(db.String(128))
     jwt = db.Column(db.String(512))
-    github_sid = db.Column(db.String(128))
-    github_access_token = db.Column(db.String(256)) 
+
+    def json(self):
+        return {'id': self.id, 'email': self.email, 'jwt': self.jwt}

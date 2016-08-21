@@ -1,9 +1,20 @@
-<div class="container">
+<div *ngIf="!loginInProgress" class="container">
     <h2 class="welcome-title">Stage34</h2>
     <div class="login-btn-wrap">
         <a (click)="login()" class="btn btn-block btn-social btn-lg btn-github">
             <span class="fa fa-github"></span>
-            <span class="login-text">Sign in with <strong>Github</strong></span>
+            <span class="login-text">Log in with <strong>Github</strong></span>
+        </a>
+    </div>
+</div>
+
+<div *ngIf="loginInProgress" class="container">
+    <h2 class="confirm-title">Confirm to log in with your email:</h2>
+    <div class="confirm-email"><p>{{ primaryEmail }}</p></div>
+    <div class="confirm-btn-wrap">
+        <a (click)="confirm()" class="btn btn-block btn-social btn-lg btn-github">
+            <span class="fa fa-check"></span>
+            <span class="confirm-text">Yes, <strong>Confirmed</strong></span>
         </a>
     </div>
 </div>
