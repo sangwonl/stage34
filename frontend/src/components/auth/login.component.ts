@@ -5,8 +5,6 @@ import { AuthService } from '../../services/auth.service';
 import { GithubService } from '../../services/github.service';
 import { CookieService } from 'angular2-cookie/core';
 
-import { User } from '../../models/user';
-
 @Component({
     selector: 'login',
     templateUrl: 'login.component.html',
@@ -28,10 +26,10 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         this.accessToken = this.cookieService.get('github-access-token');
         if (this.accessToken && this.accessToken.length > 0) {
+            this.loginInProgress = true;
             this.githubService.setAccessToken(this.accessToken);
             this.githubService.getPrimaryEmail().then(email => {
                 this.primaryEmail = email;
-                this.loginInProgress = true;
             });
         }
     }
@@ -41,9 +39,11 @@ export class LoginComponent implements OnInit {
     }
 
     confirm() {
-        this.authService.confirm(this.primaryEmail, this.accessToken).then((user: User) => {
-            console.log(user);
-            this.router.navigate(['/dash']); 
+        this.authService.confirm(this.primaryEmail, this.accessToken).then(loginDone => {
+            if (loginDone) {
+                this.cookieService.remove('github-access-token');
+                this.router.navigate(['/dash']); 
+            }
         });
     }
 }

@@ -9,3 +9,6 @@ class User(db.Model):
     email = db.Column(db.String(128))
     password = db.Column(db.String(128))
     jwt = db.Column(db.String(512))
+
+    def json(self):
+        return {'id': self.id, 'email': self.email, 'jwt': self.jwt}

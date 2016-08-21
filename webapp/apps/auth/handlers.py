@@ -28,7 +28,7 @@ class GithubCallbackHandler(AsyncBaseHandler):
         self.redirect('/login')
 
 
-class SigninHandler(AsyncBaseHandler):
+class LoginHandler(AsyncBaseHandler):
     @gen.coroutine
     def do_post(self, *args, **kwargs):
         json_body = self.get_json_body()
@@ -54,5 +54,5 @@ class SigninHandler(AsyncBaseHandler):
         db.add(user)
         db.commit()
 
-        res = JSENDSuccess(status_code=200, data={'jwt': token})
+        res = JSENDSuccess(status_code=200, data=user.json())
         raise gen.Return(res)
