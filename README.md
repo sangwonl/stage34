@@ -15,14 +15,12 @@ $ pip install requirements/dev.txt
 
 #### Migration
 ```
-$ alembic -c migrations/conf/local.ini revision "add a new column"   # new revision
-$ alembic -c migrations/conf/local.ini upgrade heads                 # migrate to heads
-$ alembic -c migrations/conf/local.ini downgrade -1                  # backward to the prev one
+$ ENV=local python manage.py migrate
 ```
 
 #### Run Server
 ```
-$ ENV=local python app.py
+$ ENV=local python manage.py runserver 0.0.0.0:8080
 ```
 
 ## Frontend
@@ -55,4 +53,9 @@ $ pip install requirements/dev.txt
 #### Run Celery Worker
 ```
 $ ENV=local python app.py worker -B --loglevel=info -Q q_default
+```
+
+## Nginx
+```
+$ nginx -p nginx -c nginx.conf
 ```
