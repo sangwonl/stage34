@@ -22,6 +22,14 @@ class Membership(models.Model):
     class Meta:
         db_table = 'membership'
 
+    @classmethod
+    def get_org_of_user(cls, user):
+        try:
+            m = cls.objects.get(user=user)
+        except cls.DoesNotExist:
+            return None
+        return m.organization
+
 
 class Stage(models.Model):
     STATUS_CHOICES = (
