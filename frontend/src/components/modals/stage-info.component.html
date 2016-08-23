@@ -9,7 +9,7 @@
             </div>
             <div class="modal-body">
                 <span *ngIf="stage">
-                    <p class="endpoint">{{ stage.endpoint }}</p>
+                    <p class="endpoint">{{ stage.endpoint || "not provisioned yet" }}</p>
                 </span>
             </div>
         </div>

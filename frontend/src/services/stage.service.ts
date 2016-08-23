@@ -43,10 +43,10 @@ export class StageService {
         stage.title = title;
         stage.repo = repo;
         stage.branch = branch;
-        stage.status = 'paused';
-        stage.commits = 0;
-        stage.created_at = new Date().getTime();
-        stage.endpoint = 'not provisioned yet';
+        // stage.status = 'paused';
+        // stage.commits = 0;
+        // stage.created_at = new Date().getTime();
+        // stage.endpoint = 'not provisioned yet';
         return stage;
     }
 

@@ -55,3 +55,32 @@ class StageDetailHandler(AuthRequiredMixin, View):
 
         stage_dict = model_to_dict(stage, fields=RES_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)
+
+    def put(self, request, stage_id, *args, **kwargs):
+        json_body = json.loads(request.body)
+        title = json_body.get('title')
+        repo = json_body.get('repo')
+        branch = json_body.get('branch')
+        status = json_body.get('status')
+        commits = json_body.get('commits')
+        endpoint = json_body.get('endpoint')
+
+        org = Membership.get_org_of_user(request.user)
+        if not org:
+            return JSENDError(status_code=400, msg='org not found')
+
+        try:
+            stage = Stage.objects.get(org=org, id=stage_id)
+        except Stage.DoesNotExist:
+            return JSENDError(status_code=404, msg='stage not found')
+
+        stage.title = title if title else stage.title
+        stage.repo = repo if repo else stage.repo
+        stage.branch = branch if branch else stage.branch
+        stage.status = status if status else stage.status
+        stage.commits = commits if commits else stage.commits
+        stage.endpoint = endpoint if endpoint else stage.endpoint
+        stage.save()
+
+        stage_dict = model_to_dict(stage, fields=RES_FIELDS)
+        return JSENDSuccess(status_code=204, data=stage_dict)
