@@ -6,5 +6,5 @@ export class Stage {
     repo: string;
     branch: string;
     commits: number;
-    created_ts: number;
+    created_at: number;
 }

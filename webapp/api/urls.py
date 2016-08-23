@@ -11,6 +11,7 @@ urlpatterns = [
         url(r'^login/$', auth.LoginHandler.as_view())
     ])),
     url(r'^api/v1/stages/', include([
-        url(r'^$', stage.StageRootHandler.as_view())
+        url(r'^$', stage.StageRootHandler.as_view()),
+        url(r'^(?P<stage_id>\d+)/$', stage.StageDetailHandler.as_view())
     ]))
 ]

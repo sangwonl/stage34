@@ -11,7 +11,7 @@ import json
 import jwt
 
 
-RES_FIELDS = ['id', 'title', 'endpoint', 'status', 'repo', 'branch', 'commits', 'created_ts']
+RES_FIELDS = ['id', 'title', 'endpoint', 'status', 'repo', 'branch', 'commits', 'created_at']
 
 
 class StageRootHandler(AuthRequiredMixin, View):
@@ -38,5 +38,20 @@ class StageRootHandler(AuthRequiredMixin, View):
             return JSENDError(status_code=400, msg='org not found')
 
         stage = Stage.objects.create(org=org, title=title, repo=repo, branch=branch)
+        stage_dict = model_to_dict(stage, fields=RES_FIELDS)
+        return JSENDSuccess(status_code=200, data=stage_dict)
+
+
+class StageDetailHandler(AuthRequiredMixin, View):
+    def get(self, request, stage_id, *args, **kwargs):
+        org = Membership.get_org_of_user(request.user)
+        if not org:
+            return JSENDError(status_code=400, msg='org not found')
+
+        try:
+            stage = Stage.objects.get(org=org, id=stage_id)
+        except Stage.DoesNotExist:
+            return JSENDError(status_code=404, msg='stage not found')
+
         stage_dict = model_to_dict(stage, fields=RES_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)

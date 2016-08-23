@@ -50,7 +50,3 @@ class Stage(models.Model):
 
     class Meta:
         db_table = 'stages'
-
-    @property
-    def created_ts(self):
-        return 0

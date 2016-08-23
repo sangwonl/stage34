@@ -9,7 +9,7 @@
         <p class="stage-repo">{{ stage.repo }}</p>
         <p class="stage-branch">{{ stage.branch }}</p>
         <p class="stage-commits">{{ stage.commits }} commits</p>
-        <p class="stage-created-at">{{ stage.created_ts | amTimeAgo }}</p>
+        <p class="stage-created-at">{{ stage.created_at | amTimeAgo }}</p>
     </div>
     <div class="stage-footer">
         <span class="stage-info" (click)="onInfoClicked()">
