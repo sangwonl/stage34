@@ -84,3 +84,17 @@ class StageDetailHandler(AuthRequiredMixin, View):
 
         stage_dict = model_to_dict(stage, fields=RES_FIELDS)
         return JSENDSuccess(status_code=204, data=stage_dict)
+
+
+    def delete(self, request, stage_id, *args, **kwargs):
+        org = Membership.get_org_of_user(request.user)
+        if not org:
+            return JSENDError(status_code=400, msg='org not found')
+
+        try:
+            stage = Stage.objects.get(org=org, id=stage_id)
+        except Stage.DoesNotExist:
+            return JSENDError(status_code=404, msg='stage not found')
+
+        stage.delete()
+        return JSENDSuccess(status_code=204, data={})
