@@ -17,24 +17,24 @@ export class AuthService {
 
     constructor(private http: Http) {}
 
-    isAuthenticated() {
+    public isAuthenticated() {
         let token = this.getToken();
         this.isLoggedIn = token !== null;
         return this.isLoggedIn;
     }
 
-    getToken() {
+    public getToken() {
         return localStorage.getItem('token');
     }
 
-    newUser(email: string, accessToken: string): User {
+    private newUser(email: string, accessToken: string): User {
         let user = new User;
         user.email = email;
         user.access_token = accessToken;
         return user;
     }
 
-    getGithubAuthUrl() {
+    private getGithubAuthUrl() {
         let url = `${STAGE34_HOST_BASE}/auth/github_auth_url/`;
         return this.http.get(url)
             .toPromise()
@@ -42,7 +42,7 @@ export class AuthService {
             .catch(this.handleError);        
     }
 
-    postLogin(email: string, accessToken: string) {
+    private postLogin(email: string, accessToken: string) {
         let newUser = this.newUser(email, accessToken);
         let url = `${STAGE34_HOST_BASE}/auth/login/`;
         let body = JSON.stringify(newUser);
@@ -54,14 +54,14 @@ export class AuthService {
             .catch(this.handleError);
     }
 
-    login() {
+    public login() {
         this.getGithubAuthUrl().then(data => {
             // redirect to github authorize url
             window.location.href = data.authorize_url;
         });
     }
 
-    confirm(email: string, accessToken: string) {
+    public confirm(email: string, accessToken: string) {
         return this.postLogin(email, accessToken).then(user => {
             localStorage.setItem('token', user.token);
             this.isLoggedIn = true;
@@ -69,7 +69,7 @@ export class AuthService {
         });
     }
 
-    logout() {
+    public logout() {
         localStorage.removeItem('token');
         this.isLoggedIn = false;
     }

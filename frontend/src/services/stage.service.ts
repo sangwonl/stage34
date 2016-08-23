@@ -10,15 +10,15 @@ import { STAGE34_API_BASE } from '../consts';
 export class StageService {
     constructor(private authService: AuthService, private http: Http) {}
 
-    setAuthorizationHeader(headers: Headers) {
+    private setAuthorizationHeader(headers: Headers) {
         headers.append('Authorization', `token ${this.authService.getToken()}`);
     }
 
-    getRequestOptions(headers: Headers) {
+    private getRequestOptions(headers: Headers) {
         return new RequestOptions({ headers: headers });
     }
 
-    getStages() {
+    public getStages() {
         let url = `${STAGE34_API_BASE}/stages/`;
         let headers = new Headers();
         this.setAuthorizationHeader(headers);
@@ -28,7 +28,7 @@ export class StageService {
             .catch(this.handleError);
     }
 
-    getStage(id: number) {
+    public getStage(id: number) {
         let url = `${STAGE34_API_BASE}/stages/${id}/`;
         let headers = new Headers();
         this.setAuthorizationHeader(headers);
@@ -38,7 +38,7 @@ export class StageService {
             .catch(this.handleError);
     }
 
-    newStage(title: string, repo: string, branch: string): Stage {
+    public newStage(title: string, repo: string, branch: string): Stage {
         let stage = new Stage;
         stage.title = title;
         stage.repo = repo;
@@ -50,7 +50,7 @@ export class StageService {
         return stage;
     }
 
-    createStage(stageInfo: any) {
+    public createStage(stageInfo: any) {
         let newStage = this.newStage(stageInfo.title, stageInfo.repo, stageInfo.branch); 
         let url = `${STAGE34_API_BASE}/stages/`;
         let body = JSON.stringify(newStage);
@@ -62,7 +62,7 @@ export class StageService {
             .catch(this.handleError);
     }
 
-    deleteStage(stage: Stage) {
+    public deleteStage(stage: Stage) {
         let url = `${STAGE34_API_BASE}/stages/${stage.id}/`;
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         this.setAuthorizationHeader(headers);
@@ -72,7 +72,7 @@ export class StageService {
             .catch(this.handleError);       
     }
 
-    toggleStatus(stage: Stage) {
+    public toggleStatus(stage: Stage) {
         let statusToggleMap: any = {'running': 'paused', 'paused': 'running'};
         let stageCopy: Stage = Object.assign({}, stage);
         stageCopy.status = statusToggleMap[stage.status];

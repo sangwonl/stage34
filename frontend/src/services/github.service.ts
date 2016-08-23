@@ -15,15 +15,15 @@ export class GithubService {
 
     constructor(private http: Http) {}
 
-    setAccessToken(accessToken: string) {
+    public setAccessToken(accessToken: string) {
         this.accessToken = accessToken;
     }
 
-    setAuthorizationHeader(headers: Headers) {
+    private setAuthorizationHeader(headers: Headers) {
         headers.append('Authorization', `token ${this.accessToken}`);
     }
 
-    getPrimaryEmail() {
+    public getPrimaryEmail() {
         let url = `${GITHUB_API_BASE}/user/emails`;
         let headers = new Headers();
         this.setAuthorizationHeader(headers);

@@ -31,16 +31,16 @@ export class DashComponent implements OnInit {
         this.refreshStages();
     }
 
-    refreshStages() {
+    private refreshStages() {
         this.stageService.getStages()
             .then(stages => this.stages = stages);
     }
 
-    onShowStageInfo(event: any) {
+    private onShowStageInfo(event: any) {
         this.stageInfoModal.showModal(event.value);
     }
 
-    onToggleStageStatus(event: any) {
+    private onToggleStageStatus(event: any) {
         let targetStage: Stage = event.value;
         this.stageService.toggleStatus(targetStage).then(stage => {
             targetStage.status = stage.status;   
@@ -48,11 +48,11 @@ export class DashComponent implements OnInit {
         });
     }
 
-    onAddNewStage(event: any) {
+    private onAddNewStage(event: any) {
         this.stageNewModal.showModal();
     }
 
-    onCreateNewStage(event: any) {
+    private onCreateNewStage(event: any) {
         let newStageInfo = event.value;
         let runOnClose = newStageInfo.runOnClose;
         delete newStageInfo['runOnClose'];
@@ -62,7 +62,7 @@ export class DashComponent implements OnInit {
         })
     }
 
-    onTrashStage(event: any) {
+    private onTrashStage(event: any) {
         let targetStage: Stage = event.value;
         this.stageService.deleteStage(targetStage).then(stage => {
             this.stages = this.stages.filter(s => s !== stage);

@@ -25,6 +25,12 @@ export class StageNewComponent implements AfterViewInit {
     public showModal() { this.newModal.show(); }
     public hideModal() { this.newModal.hide(); }
 
+    private resetForm() {
+        this.title = ''; 
+        this.repo = ''; 
+        this.branch = ''; 
+    }
+
     private onSubmit() {
         this.createNew.emit({
             value: {
@@ -35,5 +41,6 @@ export class StageNewComponent implements AfterViewInit {
             }
         });
         this.hideModal();
+        this.resetForm();
     }
 }

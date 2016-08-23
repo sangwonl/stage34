@@ -20,14 +20,12 @@
 }
 
 .stage-header {
-    height: 38px;
+    height: 40px;
 }
 
 .stage-title {
     font-size: 14px;
     font-weight: 400;
-    text-align: left;
-    margin-bottom: 20px;
     float: left;
 }
 

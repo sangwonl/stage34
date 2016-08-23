@@ -14,8 +14,8 @@ export class StageCardComponent implements OnInit {
     @Input() stage: Stage;
     @Input() forNew: boolean = false;
 
-    @Output() showInfo = new EventEmitter();
     @Output() toggleStatus = new EventEmitter();
+    @Output() showInfo = new EventEmitter();
     @Output() addNew = new EventEmitter();
     @Output() trash = new EventEmitter();
 
@@ -23,30 +23,30 @@ export class StageCardComponent implements OnInit {
 
     ngOnInit() {}
 
-    statusIconClass() {
+    private statusIconClass() {
         return {
             'fa-stop': this.stage.status == 'running',
             'fa-play': this.stage.status =='paused'
         }
     }
 
-    canTrash() {
+    private canTrash() {
         return this.stage && this.stage.status == 'paused';
     }
 
-    onInfoClicked() {
+    private onInfoClicked() {
         this.showInfo.emit({value: this.stage});
     }
 
-    onStatusClicked() {
+    private onStatusClicked() {
         this.toggleStatus.emit({value: this.stage});
     }
 
-    onNewClicked() {
+    private onNewClicked() {
         this.addNew.emit({});
     }
 
-    onTrashClicked() {
+    private onTrashClicked() {
         this.trash.emit({value: this.stage});
     }
 }
