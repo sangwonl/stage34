@@ -5,11 +5,11 @@
                 <button type="button" class="close" (click)="hideModal()" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Stage Connection Info.</h4>
+                <h4 class="modal-title">Stage Endpoint.</h4>
             </div>
             <div class="modal-body">
                 <span *ngIf="stage">
-                    <p class="connect-info">{{ stage.connect_info }}</p>
+                    <p class="endpoint">{{ stage.endpoint || "not provisioned yet" }}</p>
                 </span>
             </div>
         </div>

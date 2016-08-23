@@ -34,11 +34,11 @@ export class LoginComponent implements OnInit {
         }
     }
 
-    login() {
+    private login() {
         this.authService.login();
     }
 
-    confirm() {
+    private confirm() {
         this.authService.confirm(this.primaryEmail, this.accessToken).then(loginDone => {
             if (loginDone) {
                 this.cookieService.remove('github-access-token');
