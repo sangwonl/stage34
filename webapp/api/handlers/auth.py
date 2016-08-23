@@ -15,8 +15,7 @@ import jwt
 class GithubAuthUrlHandler(View):
     def get(self, request, *args, **kwargs):
         auth_url = GithubAgent().get_authorize_url()
-        res = JSENDSuccess(status_code=200, data={'authorize_url': auth_url})
-        return res
+        return JSENDSuccess(status_code=200, data={'authorize_url': auth_url})
 
 
 class GithubCallbackHandler(View):
@@ -45,7 +44,7 @@ class LoginHandler(View):
         user, created = User.objects.get_or_create(email=email)
 
         # create jwt
-        payload = {'email': email, 'access_token': access_token}
+        payload = {'uid': user.id, 'email': email, 'access_token': access_token}
         token = jwt.encode(payload=payload, key=settings.JWT_SECRET)
 
         # save jwt on user

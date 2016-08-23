@@ -50,6 +50,10 @@ INSTALLED_APPS += [
 ]
 
 AUTH_USER_MODEL = 'api.User'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'api.helpers.backends.JWTAuthenticationBackend'
+]
 
 MIDDLEWARE_CLASSES = [
     # 'django.middleware.security.SecurityMiddleware',
@@ -57,12 +61,14 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'api.helpers.middlewares.JWTAuthenticationMiddleware',
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'main.urls'
+APPEND_SLASH = True
 
 TEMPLATES = [
     {
