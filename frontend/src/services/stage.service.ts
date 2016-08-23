@@ -46,7 +46,7 @@ export class StageService {
         stage.status = 'paused';
         stage.commits = 0;
         stage.created_ts = new Date().getTime();
-        stage.connect_info = 'not provisioned yet';
+        stage.endpoint = 'not provisioned yet';
         return stage;
     }
 

@@ -1,10 +1,8 @@
 from __future__ import unicode_literals
 
-from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.db import models
 from django.conf import settings
-
-import os
 
 
 class UserManager(BaseUserManager):
@@ -27,14 +25,14 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     # Basic information..
-    email = models.EmailField(max_length=255, null=False, unique=True)
+    email = models.EmailField(max_length=256, null=False, unique=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     # Permission related..
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    token = models.CharField(max_length=128, null=True)
+    token = models.CharField(max_length=256, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

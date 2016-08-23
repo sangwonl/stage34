@@ -6,6 +6,7 @@ from django.forms import model_to_dict
 from api.helpers.mixins import AuthRequiredMixin
 from api.helpers.http.jsend import JSENDSuccess, JSENDError
 from api.models import User
+from api.models.resources import Stage
 
 import json
 import jwt

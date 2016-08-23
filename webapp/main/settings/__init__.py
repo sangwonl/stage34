@@ -132,6 +132,11 @@ MEDIA_ROOT = os.path.join(HOME_DIR, 'assets/media')
 MEDIA_ADMIN_ROOT = os.path.join(HOME_DIR, 'assets/static/admin')
 
 
+# Organization
+
+DEFAULT_ORG_NAME = 'stage34'
+
+
 # JWT
 
 JWT_SECRET = '8hjfdlksah9r74q38opjfdksa'
