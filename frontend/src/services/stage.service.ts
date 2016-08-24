@@ -3,6 +3,7 @@ import { Http, Headers } from '@angular/http';
 
 import { AuthService } from './auth.service';
 import { Stage } from '../models/stage';
+import { Repo, Branch } from '../models/repo';
 
 import { STAGE34_API_BASE } from '../consts';
 
@@ -34,20 +35,15 @@ export class StageService {
             .catch(this.handleError);
     }
 
-    public newStage(title: string, repo: string, branch: string): Stage {
-        let stage = new Stage;
-        stage.title = title;
-        stage.repo = repo;
-        stage.branch = branch;
-        // stage.status = 'paused';
-        // stage.commits = 0;
-        // stage.created_at = new Date().getTime();
-        // stage.endpoint = 'not provisioned yet';
-        return stage;
-    }
-
     public createStage(stageInfo: any) {
-        let newStage = this.newStage(stageInfo.title, stageInfo.repo, stageInfo.branch); 
+        let newStage = new Stage(
+            stageInfo.title, 
+            stageInfo.repo.id, 
+            stageInfo.repo.full_name, 
+            stageInfo.branch.name, 
+            stageInfo.branch.head_sha
+        );
+
         let url = `${STAGE34_API_BASE}/stages/`;
         let body = JSON.stringify(newStage);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });

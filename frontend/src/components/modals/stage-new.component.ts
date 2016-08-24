@@ -53,8 +53,8 @@ export class StageNewComponent implements AfterViewInit {
         this.createNew.emit({
             value: {
                 title: this.title,
-                repo: this.repo.full_name,
-                branch: this.branch.name,
+                repo: this.repo,
+                branch: this.branch,
                 runOnClose: this.runOnClose
             }
         });
