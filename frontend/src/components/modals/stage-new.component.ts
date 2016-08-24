@@ -11,10 +11,10 @@ import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstr
     styleUrls: ['stage-new.component.css']
 })
 export class StageNewComponent implements AfterViewInit {
-    title: string = '';
-    repo: string = '';
-    branch: string = '';
-    runOnClose: boolean = true;
+    private title: string = '';
+    private repo: string = '';
+    private branch: string = '';
+    private runOnClose: boolean = true;
 
     @ViewChild('newModal') newModal: ModalDirective;
 

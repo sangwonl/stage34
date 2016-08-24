@@ -12,8 +12,8 @@ import { STAGE34_HOST_BASE } from '../consts';
 
 @Injectable()
 export class AuthService {
-    isLoggedIn: boolean = false;
-    redirectUrl: string;
+    public redirectUrl: string;
+    private isLoggedIn: boolean = false;
 
     constructor(private http: Http) {}
 

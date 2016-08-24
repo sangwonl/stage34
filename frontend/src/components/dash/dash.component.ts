@@ -23,7 +23,7 @@ import { Stage } from '../../models/stage';
 export class DashComponent implements OnInit {
     @ViewChild('stageInfoModal') stageInfoModal: StageInfoComponent;
     @ViewChild('stageNewModal') stageNewModal: StageNewComponent;
-    stages: Stage[];
+    private stages: Stage[];
 
     constructor(private stageService: StageService) {}
 

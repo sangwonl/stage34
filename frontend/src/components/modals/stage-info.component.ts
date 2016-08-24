@@ -14,7 +14,7 @@ import { Stage } from '../../models/stage';
 })
 export class StageInfoComponent implements AfterViewInit {
     @ViewChild('infoModal') infoModal: ModalDirective;
-    stage: Stage;
+    private stage: Stage;
  
     ngAfterViewInit() {}
 

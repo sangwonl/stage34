@@ -17,7 +17,7 @@ export class GithubService {
         localStorage.setItem('github_access_token', accessToken);
     }
 
-    private getAccessToken() {
+    public getAccessToken() {
         return localStorage.getItem('github_access_token');
     }
 
