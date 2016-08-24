@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Headers, RequestOptions, Http } from '@angular/http';
+import { Http, Headers } from '@angular/http';
 
 import { AuthService } from './auth.service';
 import { Stage } from '../models/stage';

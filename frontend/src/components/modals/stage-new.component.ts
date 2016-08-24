@@ -1,33 +1,47 @@
 import { Component, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
+import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstrap';
 import { CORE_DIRECTIVES } from '@angular/common';
 
-import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstrap';
+import { GithubService } from '../../services/github.service';
+import { Repo } from '../../models/repo';
 
 @Component({
     selector: 'stage-new',
+    templateUrl: 'stage-new.component.html',
+    styleUrls: ['stage-new.component.css'],
     directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES],
     viewProviders: [BS_VIEW_PROVIDERS],
-    templateUrl: 'stage-new.component.html',
-    styleUrls: ['stage-new.component.css']
+    providers: [GithubService]
 })
 export class StageNewComponent implements AfterViewInit {
     private title: string = '';
-    private repo: string = '';
+    private repo: Repo = null;
     private branch: string = '';
     private runOnClose: boolean = true;
 
-    @ViewChild('newModal') newModal: ModalDirective;
+    private repos: Repo[];
 
+    @ViewChild('newModal') newModal: ModalDirective;
     @Output() createNew = new EventEmitter();
+
+    constructor(private githubService: GithubService) {}
  
-    ngAfterViewInit() {}
+    ngAfterViewInit() {
+        this.githubService.getRepositories().then(repos => this.repos = repos);
+    }
 
     public showModal() { this.newModal.show(); }
     public hideModal() { this.newModal.hide(); }
 
+    private onChangeRepo(selectedRepo: Repo) {
+        this.repo = selectedRepo;
+
+        // here load branches..
+    }
+
     private resetForm() {
         this.title = ''; 
-        this.repo = ''; 
+        this.repo = null; 
         this.branch = ''; 
     }
 
@@ -35,7 +49,7 @@ export class StageNewComponent implements AfterViewInit {
         this.createNew.emit({
             value: {
                 title: this.title,
-                repo: this.repo,
+                repo: this.repo.full_name,
                 branch: this.branch,
                 runOnClose: this.runOnClose
             }

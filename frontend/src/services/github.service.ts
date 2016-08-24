@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Headers, RequestOptions, Http } from '@angular/http';
+import { Http, Headers, URLSearchParams } from '@angular/http';
 
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/delay';
+import { Repo } from '../models/repo';
 
 import { GITHUB_API_BASE } from '../consts';
 
@@ -32,6 +30,20 @@ export class GithubService {
         return this.http.get(url, { headers: headers })
             .toPromise()
             .then(response => response.json().filter((e: any) => e.primary)[0].email)
+            .catch(this.handleError);
+    }
+
+    public getRepositories() {
+        let url = `${GITHUB_API_BASE}/user/repos`;
+        let params = new URLSearchParams()
+        params.set('sort', 'updated');
+        params.set('direction', 'desc');
+
+        let headers = new Headers();
+        this.setAuthorizationHeader(headers);
+        return this.http.get(url, { headers: headers, search: params })
+            .toPromise()
+            .then(response => response.json().map((r: any) => new Repo(r)))
             .catch(this.handleError);
     }
 

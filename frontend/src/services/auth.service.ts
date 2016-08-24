@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Headers, RequestOptions, Http } from '@angular/http';
+import { Http, Headers } from '@angular/http';
 
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';

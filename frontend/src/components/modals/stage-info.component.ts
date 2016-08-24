@@ -1,7 +1,6 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { CORE_DIRECTIVES } from '@angular/common';
-
 import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstrap';
+import { CORE_DIRECTIVES } from '@angular/common';
 
 import { Stage } from '../../models/stage';
 

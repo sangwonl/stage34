@@ -16,11 +16,10 @@
                     </div>
                     <div class="form-group">
                         <label for="repo-selector">Repository</label>
-                        <select id="repo-selector" class="form-control"
-                            name="repo" [(ngModel)]="repo">
-                            <option value="">Choose the repository</option>
-                            <option>repo-1</option>
-                            <option>repo-2</option>
+                        <select id="repo-selector" class="form-control" name="repo"
+                            [ngModel]="repo" (ngModelChange)="onChangeRepo($event)">
+                            <option value="null">Choose the repository</option>
+                            <option *ngFor="let repo of repos" [ngValue]="repo">{{ repo.full_name }}</option>
                         </select>
                     </div>
                     <div class="form-group">
