@@ -47,8 +47,7 @@ export class AuthService {
         let url = `${STAGE34_HOST_BASE}/auth/login/`;
         let body = JSON.stringify(newUser);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-        return this.http.post(url, body, options)
+        return this.http.post(url, body, { headers: headers })
             .toPromise()
             .then(response => response.json().data as User)
             .catch(this.handleError);

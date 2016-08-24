@@ -14,15 +14,11 @@ export class StageService {
         headers.append('Authorization', `token ${this.authService.getToken()}`);
     }
 
-    private getRequestOptions(headers: Headers) {
-        return new RequestOptions({ headers: headers });
-    }
-
     public getStages() {
         let url = `${STAGE34_API_BASE}/stages/`;
         let headers = new Headers();
         this.setAuthorizationHeader(headers);
-        return this.http.get(url, this.getRequestOptions(headers))
+        return this.http.get(url, { headers: headers })
             .toPromise()
             .then(response => response.json().data as Stage[]) 
             .catch(this.handleError);
@@ -32,7 +28,7 @@ export class StageService {
         let url = `${STAGE34_API_BASE}/stages/${id}/`;
         let headers = new Headers();
         this.setAuthorizationHeader(headers);
-        return this.http.get(url, this.getRequestOptions(headers))
+        return this.http.get(url, { headers: headers })
             .toPromise()
             .then(response => response.json().data as Stage)
             .catch(this.handleError);
@@ -56,7 +52,7 @@ export class StageService {
         let body = JSON.stringify(newStage);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         this.setAuthorizationHeader(headers);
-        return this.http.post(url, body, this.getRequestOptions(headers))
+        return this.http.post(url, body, { headers: headers })
             .toPromise()
             .then(response => response.json().data as Stage)
             .catch(this.handleError);
@@ -66,7 +62,7 @@ export class StageService {
         let url = `${STAGE34_API_BASE}/stages/${stage.id}/`;
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         this.setAuthorizationHeader(headers);
-        return this.http.delete(url, this.getRequestOptions(headers))
+        return this.http.delete(url, { headers: headers })
             .toPromise()
             .then(response => { return response.status == 204 ? stage : null; })
             .catch(this.handleError);       
@@ -81,7 +77,7 @@ export class StageService {
         let body = JSON.stringify(stageCopy);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
         this.setAuthorizationHeader(headers);
-        return this.http.put(url, body, this.getRequestOptions(headers))
+        return this.http.put(url, body, { headers: headers })
             .toPromise()
             .then(response => { return response.status == 204 ? stageCopy : stage; })
             .catch(this.handleError);
