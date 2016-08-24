@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Headers, RequestOptions, Http } from '@angular/http';
+import { Http, Headers } from '@angular/http';
 
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
@@ -12,8 +12,8 @@ import { STAGE34_HOST_BASE } from '../consts';
 
 @Injectable()
 export class AuthService {
-    isLoggedIn: boolean = false;
-    redirectUrl: string;
+    public redirectUrl: string;
+    private isLoggedIn: boolean = false;
 
     constructor(private http: Http) {}
 
@@ -47,8 +47,7 @@ export class AuthService {
         let url = `${STAGE34_HOST_BASE}/auth/login/`;
         let body = JSON.stringify(newUser);
         let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-        return this.http.post(url, body, options)
+        return this.http.post(url, body, { headers: headers })
             .toPromise()
             .then(response => response.json().data as User)
             .catch(this.handleError);

@@ -11,7 +11,18 @@ import json
 import jwt
 
 
-RES_FIELDS = ['id', 'title', 'endpoint', 'status', 'repo', 'branch', 'commits', 'created_at']
+SERIALIZE_FIELDS = [
+    'id',
+    'title',
+    'endpoint',
+    'status',
+    'repo_id',
+    'repo_name',
+    'branch_name',
+    'head_sha',
+    'commits',
+    'created_at'
+]
 
 
 class StageRootHandler(AuthRequiredMixin, View):
@@ -21,24 +32,33 @@ class StageRootHandler(AuthRequiredMixin, View):
             return JSENDError(status_code=400, msg='org not found')
 
         stages_qs = Stage.objects.filter(org=org)
-        stages = [model_to_dict(s, fields=RES_FIELDS) for s in stages_qs]
+        stages = [model_to_dict(s, fields=SERIALIZE_FIELDS) for s in stages_qs]
         return JSENDSuccess(status_code=200, data=stages)
 
     def post(self, request, *args, **kwargs):
         json_body = json.loads(request.body)
         title = json_body.get('title')
-        repo = json_body.get('repo')
-        branch = json_body.get('branch')
+        repo_id = json_body.get('repo_id')
+        repo_name = json_body.get('repo_name')
+        branch_name = json_body.get('branch_name')
+        head_sha = json_body.get('head_sha')
 
-        if not (title and repo and branch):
+        if not (title and repo_id and repo_name and branch_name, head_sha):
             return JSENDError(status_code=400, msg='invalid stage info')
 
         org = Membership.get_org_of_user(request.user)
         if not org:
             return JSENDError(status_code=400, msg='org not found')
 
-        stage = Stage.objects.create(org=org, title=title, repo=repo, branch=branch)
-        stage_dict = model_to_dict(stage, fields=RES_FIELDS)
+        stage = Stage.objects.create(
+            org=org,
+            title=title,
+            repo_id=repo_id,
+            repo_name=repo_name,
+            branch_name=branch_name,
+            head_sha=head_sha
+        )
+        stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)
 
 
@@ -59,7 +79,7 @@ class StageDetailHandler(AuthRequiredMixin, View):
         if not stage:
             return JSENDError(status_code=404, msg='stage not found')
 
-        stage_dict = model_to_dict(stage, fields=RES_FIELDS)
+        stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)
 
     def put(self, request, stage_id, *args, **kwargs):
@@ -73,14 +93,16 @@ class StageDetailHandler(AuthRequiredMixin, View):
 
         json_body = json.loads(request.body)
         stage.title = json_body.get('title', stage.title)
-        stage.repo = json_body.get('repo', stage.repo)
-        stage.branch = json_body.get('branch', stage.branch)
+        stage.repo_id = json_body.get('repo_id', stage.repo_id)
+        stage.repo_name = json_body.get('repo_name', stage.repo_name)
+        stage.branch_name = json_body.get('branch_name', stage.branch_name)
+        stage.head_sha = json_body.get('head_sha', stage.head_sha)
         stage.status = json_body.get('status', stage.status)
         stage.commits = json_body.get('commits', stage.commits)
         stage.endpoint = json_body.get('endpoint', stage.endpoint)
         stage.save()
 
-        stage_dict = model_to_dict(stage, fields=RES_FIELDS)
+        stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
         return JSENDSuccess(status_code=204, data=stage_dict)
 
     def delete(self, request, stage_id, *args, **kwargs):

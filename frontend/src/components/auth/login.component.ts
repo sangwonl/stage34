@@ -12,9 +12,8 @@ import { CookieService } from 'angular2-cookie/core';
     providers: [CookieService, GithubService]
 })
 export class LoginComponent implements OnInit {
-    loginInProgress: boolean = false;
-    primaryEmail: string;
-    accessToken: string;
+    private loginInProgress: boolean = false;
+    private primaryEmail: string;
 
     constructor(
         private authService: AuthService,
@@ -24,10 +23,10 @@ export class LoginComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.accessToken = this.cookieService.get('github-access-token');
-        if (this.accessToken && this.accessToken.length > 0) {
+        let githubAccessToken = this.cookieService.get('github-access-token');
+        if (githubAccessToken && githubAccessToken.length > 0) {
             this.loginInProgress = true;
-            this.githubService.setAccessToken(this.accessToken);
+            this.githubService.setAccessToken(githubAccessToken);
             this.githubService.getPrimaryEmail().then(email => {
                 this.primaryEmail = email;
             });
@@ -39,7 +38,8 @@ export class LoginComponent implements OnInit {
     }
 
     private confirm() {
-        this.authService.confirm(this.primaryEmail, this.accessToken).then(loginDone => {
+        let githubAccessToken = this.githubService.getAccessToken();
+        this.authService.confirm(this.primaryEmail, githubAccessToken).then(loginDone => {
             if (loginDone) {
                 this.cookieService.remove('github-access-token');
                 this.router.navigate(['/dash']); 
