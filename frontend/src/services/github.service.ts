@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { Http, Headers, URLSearchParams } from '@angular/http';
 
-import { Repo } from '../models/repo';
+import { Repo, Branch } from '../models/repo';
 
 import { GITHUB_API_BASE } from '../consts';
 
@@ -44,6 +44,16 @@ export class GithubService {
         return this.http.get(url, { headers: headers, search: params })
             .toPromise()
             .then(response => response.json().map((r: any) => new Repo(r)))
+            .catch(this.handleError);
+    }
+
+    public getBranches(repo: Repo) {
+        let url = `${GITHUB_API_BASE}/repos/${repo.full_name}/branches`;
+        let headers = new Headers();
+        this.setAuthorizationHeader(headers);
+        return this.http.get(url, { headers: headers })
+            .toPromise()
+            .then(response => response.json().map((b: any) => new Branch(b)))
             .catch(this.handleError);
     }
 

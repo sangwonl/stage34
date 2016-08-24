@@ -23,3 +23,13 @@ export class Repo {
         this.deployments_url = repo.deployments_url;
     }
 }
+
+export class Branch {
+    name: string;
+    head_sha: string;
+
+    constructor(branch: any) {
+        this.name = branch.name;
+        this.head_sha = branch.commit.sha;
+    }
+}

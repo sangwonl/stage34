@@ -3,7 +3,7 @@ import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstr
 import { CORE_DIRECTIVES } from '@angular/common';
 
 import { GithubService } from '../../services/github.service';
-import { Repo } from '../../models/repo';
+import { Repo, Branch } from '../../models/repo';
 
 @Component({
     selector: 'stage-new',
@@ -16,10 +16,11 @@ import { Repo } from '../../models/repo';
 export class StageNewComponent implements AfterViewInit {
     private title: string = '';
     private repo: Repo = null;
-    private branch: string = '';
+    private branch: Branch = null;
     private runOnClose: boolean = true;
 
     private repos: Repo[];
+    private branches: Branch[];
 
     @ViewChild('newModal') newModal: ModalDirective;
     @Output() createNew = new EventEmitter();
@@ -35,14 +36,17 @@ export class StageNewComponent implements AfterViewInit {
 
     private onChangeRepo(selectedRepo: Repo) {
         this.repo = selectedRepo;
+        this.githubService.getBranches(this.repo).then(branches => this.branches = branches);
+    }
 
-        // here load branches..
+    private onChangeBranch(selectedBranch: Branch) {
+        this.branch = selectedBranch;
     }
 
     private resetForm() {
         this.title = ''; 
         this.repo = null; 
-        this.branch = ''; 
+        this.branch = null; 
     }
 
     private onSubmit() {
@@ -50,7 +54,7 @@ export class StageNewComponent implements AfterViewInit {
             value: {
                 title: this.title,
                 repo: this.repo.full_name,
-                branch: this.branch,
+                branch: this.branch.name,
                 runOnClose: this.runOnClose
             }
         });

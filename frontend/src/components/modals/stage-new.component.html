@@ -24,11 +24,10 @@
                     </div>
                     <div class="form-group">
                         <label for="branch-selector">Branch</label>
-                        <select id="branch-selector" class="form-control"
-                            name="branch" [(ngModel)]="branch">
-                            <option value="">Choose the branch</option>
-                            <option>branch-1</option>
-                            <option>branch-2</option>
+                        <select id="branch-selector" class="form-control" name="branch"
+                            [ngModel]="branch" (ngModelChange)="onChangeBranch($event)">
+                            <option value="null">Choose the branch</option>
+                            <option *ngFor="let branch of branches" [ngValue]="branch">{{ branch.name }}</option>
                         </select>
                     </div>
                     <div class="checkbox">
