@@ -11,16 +11,18 @@ import { GITHUB_API_BASE } from '../consts';
 
 @Injectable()
 export class GithubService {
-    accessToken: string;
-
     constructor(private http: Http) {}
 
     public setAccessToken(accessToken: string) {
-        this.accessToken = accessToken;
+        localStorage.setItem('github_access_token', accessToken);
+    }
+
+    private getAccessToken() {
+        return localStorage.getItem('github_access_token');
     }
 
     private setAuthorizationHeader(headers: Headers) {
-        headers.append('Authorization', `token ${this.accessToken}`);
+        headers.append('Authorization', `token ${this.getAccessToken()}`);
     }
 
     public getPrimaryEmail() {
