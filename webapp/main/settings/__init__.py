@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+from celery.schedules import crontab
+from datetime import timedelta
+
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -47,6 +50,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'api.ApiConfig',
+    'worker.WorkerConfig'
 ]
 
 AUTH_USER_MODEL = 'api.User'
@@ -152,6 +156,32 @@ GITHUB_API = {
     'access_token_url': 'https://github.com/login/oauth/access_token',
     'api_base_url': 'https://api.github.com',
     'redirect_uri': 'http://localhost:8000/auth/github/callback/'
+}
+
+
+# Celery Configurations
+
+REDIS_URL = 'redis://0.0.0.0:6379/0'
+BROKER_URL = [REDIS_URL]
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_IGNORE_RESULT = False
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_RESULT_EXPIRES = 10 * 1     # in seconds
+#CELERY_DISABLE_RATE_LIMITS = True
+CELERY_ACKS_LATE = False
+CELERYD_PREFETCH_MULTIPLIER = 4
+CELERYD_MAX_TASKS_PER_CHILD = 10        # pre-forked task pool
+CELERYD_CONCURRENCY = 4                 # # of worker processes
+CELERY_TIMEZONE = 'Asia/Seoul'
+TCELERY_RESULT_NOWAIT = False           # tornado celery nowait option
+CELERYBEAT_SCHEDULE = {
+    'hello-every-10s': {
+        'task': 'worker.tasks.hello.say_hello',
+        'schedule': timedelta(seconds=10),
+        'args': ('world',),
+    },
 }
 
 
