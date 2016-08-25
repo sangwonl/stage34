@@ -3,24 +3,23 @@ export class Stage {
     title: string;
     endpoint: string;   
     status: string;
-    repo_id: string;
-    repo_name: string;
-    branch_name: string;
-    head_sha: string;
-    commits: number;
+    repo: string;
+    default_branch: string;
+    branch: string;
     created_at: number;
+
+    compare_url: string;
+    commits: string[];
 
     constructor(
         title: string,
-        repo_id: string,
-        repo_name: string,
-        branch_name: string,
-        head_sha: string
+        repo: string,
+        default_branch: string,
+        branch: string
     ) {
         this.title = title;
-        this.repo_id = repo_id;
-        this.repo_name = repo_name;
-        this.branch_name = branch_name;
-        this.head_sha = head_sha;
+        this.repo = repo;
+        this.default_branch = default_branch;
+        this.branch = branch;
     }
 }

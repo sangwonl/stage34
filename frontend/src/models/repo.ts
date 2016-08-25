@@ -33,3 +33,13 @@ export class Branch {
         this.head_sha = branch.commit.sha;
     }
 }
+
+export class Compare {
+    permalink_url: string;
+    commits: string[];
+
+    constructor(compare: any) {
+        this.permalink_url = compare.permalink_url;
+        this.commits = compare.commits;
+    }
+}

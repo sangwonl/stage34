@@ -16,11 +16,9 @@ SERIALIZE_FIELDS = [
     'title',
     'endpoint',
     'status',
-    'repo_id',
-    'repo_name',
-    'branch_name',
-    'head_sha',
-    'commits',
+    'repo',
+    'default_branch',
+    'branch',
     'created_at'
 ]
 
@@ -38,12 +36,11 @@ class StageRootHandler(AuthRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         json_body = json.loads(request.body)
         title = json_body.get('title')
-        repo_id = json_body.get('repo_id')
-        repo_name = json_body.get('repo_name')
-        branch_name = json_body.get('branch_name')
-        head_sha = json_body.get('head_sha')
+        repo = json_body.get('repo')
+        default_branch= json_body.get('default_branch')
+        branch= json_body.get('branch')
 
-        if not (title and repo_id and repo_name and branch_name, head_sha):
+        if not (title and repo and default_branch and branch):
             return JSENDError(status_code=400, msg='invalid stage info')
 
         org = Membership.get_org_of_user(request.user)
@@ -53,10 +50,9 @@ class StageRootHandler(AuthRequiredMixin, View):
         stage = Stage.objects.create(
             org=org,
             title=title,
-            repo_id=repo_id,
-            repo_name=repo_name,
-            branch_name=branch_name,
-            head_sha=head_sha
+            repo=repo,
+            default_branch=default_branch,
+            branch=branch
         )
         stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)
@@ -93,12 +89,10 @@ class StageDetailHandler(AuthRequiredMixin, View):
 
         json_body = json.loads(request.body)
         stage.title = json_body.get('title', stage.title)
-        stage.repo_id = json_body.get('repo_id', stage.repo_id)
-        stage.repo_name = json_body.get('repo_name', stage.repo_name)
-        stage.branch_name = json_body.get('branch_name', stage.branch_name)
-        stage.head_sha = json_body.get('head_sha', stage.head_sha)
+        stage.repo = json_body.get('repo', stage.repo)
+        stage.default_branch = json_body.get('default_branch', stage.default_branch)
+        stage.branch = json_body.get('branch', stage.branch)
         stage.status = json_body.get('status', stage.status)
-        stage.commits = json_body.get('commits', stage.commits)
         stage.endpoint = json_body.get('endpoint', stage.endpoint)
         stage.save()
 
