@@ -19,6 +19,7 @@ class JWTAuthenticationBackend(object):
 
         try:
             user = User.objects.get(id=uid, email=email)
+            user.jwt_payload = payload
         except User.DoesNotExist:
             return None
 

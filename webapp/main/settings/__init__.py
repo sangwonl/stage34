@@ -169,13 +169,14 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_RESULT_EXPIRES = 10 * 1     # in seconds
-#CELERY_DISABLE_RATE_LIMITS = True
+# CELERY_DISABLE_RATE_LIMITS = True
 CELERY_ACKS_LATE = False
 CELERYD_PREFETCH_MULTIPLIER = 4
 CELERYD_MAX_TASKS_PER_CHILD = 10        # pre-forked task pool
 CELERYD_CONCURRENCY = 4                 # # of worker processes
 CELERY_TIMEZONE = 'Asia/Seoul'
-TCELERY_RESULT_NOWAIT = False           # tornado celery nowait option
+CELERY_ALWAYS_EAGER = False
+# TCELERY_RESULT_NOWAIT = False         # tornado celery nowait option
 CELERYBEAT_SCHEDULE = {
     'hello-every-10s': {
         'task': 'worker.tasks.hello.say_hello',

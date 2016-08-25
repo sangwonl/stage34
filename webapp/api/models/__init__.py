@@ -34,6 +34,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     token = models.CharField(max_length=256, null=True)
 
+    # Volitile variables..
+    jwt_payload = None          # it's set by auth backend - JWTAuthenticationBackend
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
