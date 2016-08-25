@@ -20,7 +20,7 @@
             <li><a [routerLink]="['/profile']">Profile</a></li>
             <li><a [routerLink]="['/settings']">Settings</a></li>
             <li role="separator" class="divider"></li>
-            <li><a [routerLink]="['/logout']">Logout</a></li>
+            <li><a (click)="onLogout()">Logout</a></li>
           </ul>
         </li>
       </ul>

@@ -69,7 +69,7 @@ export class AuthService {
     }
 
     public logout() {
-        localStorage.removeItem('token');
+        localStorage.clear();
         this.isLoggedIn = false;
     }
 
