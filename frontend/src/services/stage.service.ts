@@ -38,10 +38,9 @@ export class StageService {
     public createStage(stageInfo: any) {
         let newStage = new Stage(
             stageInfo.title, 
-            stageInfo.repo.id, 
             stageInfo.repo.full_name, 
-            stageInfo.branch.name, 
-            stageInfo.branch.head_sha
+            stageInfo.repo.default_branch, 
+            stageInfo.branch.name
         );
 
         let url = `${STAGE34_API_BASE}/stages/`;

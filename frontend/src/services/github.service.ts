@@ -3,7 +3,8 @@ import { Observable } from 'rxjs/Observable';
 
 import { Http, Headers, URLSearchParams } from '@angular/http';
 
-import { Repo, Branch } from '../models/repo';
+import { Stage } from '../models/stage';
+import { Repo, Branch, Compare } from '../models/repo';
 
 import { GITHUB_API_BASE } from '../consts';
 
@@ -38,6 +39,7 @@ export class GithubService {
         let params = new URLSearchParams()
         params.set('sort', 'updated');
         params.set('direction', 'desc');
+        params.set('per_page', '1000');
 
         let headers = new Headers();
         this.setAuthorizationHeader(headers);
@@ -54,6 +56,17 @@ export class GithubService {
         return this.http.get(url, { headers: headers })
             .toPromise()
             .then(response => response.json().map((b: any) => new Branch(b)))
+            .catch(this.handleError);
+    }
+
+    public getCompareBranch(stage: Stage) {
+        let url = `${GITHUB_API_BASE}/repos/${stage.repo}/compare/${stage.default_branch}...${stage.branch}`
+        console.log(url);
+        let headers = new Headers();
+        this.setAuthorizationHeader(headers);
+        return this.http.get(url, { headers: headers })
+            .toPromise()
+            .then(response => new Compare(response.json()))
             .catch(this.handleError);
     }
 

@@ -6,9 +6,11 @@
         </span>
     </div>
     <div class="stage-body">
-        <p class="stage-repo">{{ stage.repo_name }}</p>
-        <p class="stage-branch">{{ stage.branch_name }}</p>
-        <p class="stage-commits">{{ stage.commits }} commits</p>
+        <p class="stage-repo">{{ stage.repo }}</p>
+        <p class="stage-branch">{{ stage.branch }}</p>
+        <a [attr.href]="stage.compare_url">
+            <p class="stage-commits">{{ stage.commits.length }} commits</p>
+        </a>
         <p class="stage-created-at">{{ stage.created_at | amTimeAgo }}</p>
     </div>
     <div class="stage-footer">
