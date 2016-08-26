@@ -5,9 +5,10 @@ from django.core import serializers
 from django.forms import model_to_dict
 
 from api.helpers.http.jsend import JSENDSuccess, JSENDError
-from api.helpers.agents.github import GithubAgent
 from api.models import User
 from api.models.resources import Organization, Membership
+
+from libs.utils.github import GithubAgent
 
 import json
 import jwt
