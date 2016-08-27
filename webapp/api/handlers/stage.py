@@ -58,7 +58,7 @@ class StageRootHandler(AuthRequiredMixin, View):
         )
 
         github_access_key = request.user.jwt_payload.get('access_token')
-        task_provision_stage.apply_async(args=[github_access_key, repo, branch])
+        task_provision_stage.apply_async(args=[github_access_key, stage.id, repo, branch])
 
         stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)

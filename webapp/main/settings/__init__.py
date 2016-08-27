@@ -189,6 +189,11 @@ CELERYBEAT_SCHEDULE = {
 }
 
 
+# Stage Repository
+
+REPOSITORY_HOME = os.path.join(HOME_DIR, 'storage')
+
+
 try:
     from importlib import import_module
     env = os.environ.get('ENV', 'local')
