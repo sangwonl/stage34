@@ -14,7 +14,7 @@ class GithubAgent(object):
         return settings.GITHUB_API.get('api_base_url')
 
     def _get_api_hdrs(self):
-        return {'Authorization': 'token {}'.format(self.access_token)}
+        return {'Authorization': 'token {0}'.format(self.access_token)}
 
     def get_authorize_url(self):
         query_params = {
@@ -27,7 +27,7 @@ class GithubAgent(object):
 
         github_auth_base_url = settings.GITHUB_API.get('authorize_url')
         urlencoded_query_parms = urllib.urlencode(query_params)
-        return '%s?%s' % (github_auth_base_url, urlencoded_query_parms)
+        return '{0}?{1}'.format(github_auth_base_url, urlencoded_query_parms)
 
     def request_access_token(self, state, code):
         res = requests.post(
@@ -46,7 +46,7 @@ class GithubAgent(object):
 
     def get_primary_email(self):
         res = requests.get(
-            url='{}/user/emails'.format(self._get_api_base()),
+            url='{0}/user/emails'.format(self._get_api_base()),
             headers=self._get_api_hdrs()
         )
 
@@ -61,12 +61,16 @@ class GithubAgent(object):
 
     def get_deploy_keys(self, repo):
         res = requests.get(
-            url='{}/repos/{}/keys'.format(self._get_api_base(), repo),
+            url='{0}/repos/{1}/keys'.format(self._get_api_base(), repo),
             headers=self._get_api_hdrs()
         )
         return res.json()
 
-    def add_deploy_key(self, repo, key_title, key):
+    def add_deploy_key(self, repo, key_title, key_file):
+        key = ''
+        with open(key_file, 'rt') as key_f:
+            key = key_f.read()
+
         res = requests.post(
             url='{}/repos/{}/keys'.format(self._get_api_base(), repo),
             headers=self._get_api_hdrs(),

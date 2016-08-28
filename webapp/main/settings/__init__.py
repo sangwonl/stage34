@@ -158,8 +158,10 @@ GITHUB_API = {
     'redirect_uri': 'http://localhost:8000/auth/github/callback/'
 }
 
-DEPLOY_KEY_TITLE = 'stage34'
-DEPLOY_KEY = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/hXqi+jJixje6m8h7X13ohSURziPiQ45dLHEIwrPCGTdZilrX06YSSQvCVnir3JHfpawbu9OqUUBUuTVciR2xuHzTcoIDHTN/u3kojV+WnV9rQHgd8BNggveRq14tl6hhfhMvoz+53gmxY2hrtvu5QeKLkkq59sbd4L3kvSNcSsc3CuuJ9YmoD2kSuydfixc/4CpxbcZOVk06h5GtLZy7v8VAyg4BVBAbjvRkRWBe3TOYUfbPz50rORQdOTdGZdHBcWTMnEA6tgwiY9deGtIwKN35tUoLC3xZ6nvH59SHA+QyQEWt8ts6gvKWNF4aVNNHdBCGGxl/hix5nCFChIbU/URtpohHtO3UBwmuosuA4FFOZ9pmPViBP/XxdQijePaDV9gRApyfp6IFgHY6YjNh1WOs18kO6d3IbFZA5BqfdVw/EhhCcwJ9mD+hUIWFh/p0moQZYVEJ5gtALqG6B/A0VePamfINZnHovJyqeAW/lT5lVDdem8t6DUu+O2TwNR4P88s5wrUaJomGna6+oVqj1VUPJwEq8KQL6BmoQI3IARzF1w/DiZb8cpOeGyBqv7nOKJL4giJizxm8V0IsKjHn3FeCI/QwqkVHfgeb0eDhgW9xTgA2f/zG+A8OSmpkp88l33H9b2/n4Pj2WZC/MRgvvWkg4qS2F7hsM4ap/Harow== eddy@dailyhotel.com'
+
+# Stage Repository
+
+REPOSITORY_HOME = os.path.join(HOME_DIR, 'storage')
 
 
 # Celery Configurations
@@ -187,11 +189,6 @@ CELERYBEAT_SCHEDULE = {
         'args': ('world',),
     },
 }
-
-
-# Stage Repository
-
-REPOSITORY_HOME = os.path.join(HOME_DIR, 'storage')
 
 
 try:
