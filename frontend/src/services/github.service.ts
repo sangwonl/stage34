@@ -61,7 +61,6 @@ export class GithubService {
 
     public getCompareBranch(stage: Stage) {
         let url = `${GITHUB_API_BASE}/repos/${stage.repo}/compare/${stage.default_branch}...${stage.branch}`
-        console.log(url);
         let headers = new Headers();
         this.setAuthorizationHeader(headers);
         return this.http.get(url, { headers: headers })

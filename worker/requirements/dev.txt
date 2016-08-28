@@ -1,2 +1,0 @@
--r base.txt
-bpython==0.15

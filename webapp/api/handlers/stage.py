@@ -7,6 +7,8 @@ from api.helpers.mixins import AuthRequiredMixin
 from api.helpers.http.jsend import JSENDSuccess, JSENDError
 from api.models.resources import Membership, Stage
 
+from worker.tasks.deployment import task_provision_stage
+
 import json
 import jwt
 
@@ -54,6 +56,10 @@ class StageRootHandler(AuthRequiredMixin, View):
             default_branch=default_branch,
             branch=branch
         )
+
+        github_access_key = request.user.jwt_payload.get('access_token')
+        task_provision_stage.apply_async(args=[github_access_key, stage.id, repo, branch])
+
         stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)
 
