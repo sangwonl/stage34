@@ -29,7 +29,7 @@ $ ENV=local celery -A main worker -B --loglevel=info -Q q_default
 ```
 or
 ```
-$ ENV=local python -m main.worker worker -B --loglevel=info -Q q_default
+$ ENV=local python main/celeryworker.py worker -B --loglevel=info -Q q_default
 ```
 
 
