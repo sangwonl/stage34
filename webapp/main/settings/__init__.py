@@ -16,8 +16,9 @@ from datetime import timedelta
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HOME_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+MAIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WEBAPP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,9 +32,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+STAGE34_HOST = 'stage34.io'
 
 # Application definition
-
 INSTALLED_APPS = [
     # django apps
     'django.contrib.admin',
@@ -95,18 +96,16 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(MAIN_DIR, 'db.sqlite3'),
     }
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -117,7 +116,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -127,27 +125,23 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(HOME_DIR, 'assets/static')
+STATIC_ROOT = os.path.join(WEBAPP_DIR, 'assets/static')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(HOME_DIR, 'assets/media')
-MEDIA_ADMIN_ROOT = os.path.join(HOME_DIR, 'assets/static/admin')
+MEDIA_ROOT = os.path.join(WEBAPP_DIR, 'assets/media')
+MEDIA_ADMIN_ROOT = os.path.join(WEBAPP_DIR, 'assets/static/admin')
 
 
 # Organization
-
 DEFAULT_ORG_NAME = 'stage34'
 
 
 # JWT
-
 JWT_SECRET = '8hjfdlksah9r74q38opjfdksa'
 
 
 # Github API Info.
-
 GITHUB_API = {
     'client_id': '7f845815ccbc5c97d622',
     'client_secret': '026219920a2470dbe33af113afe8d781cd154c55',
@@ -160,12 +154,23 @@ GITHUB_API = {
 
 
 # Stage Repository
+REPOSITORY_HOME = os.path.join(WEBAPP_DIR, 'storage')
 
-REPOSITORY_HOME = os.path.join(HOME_DIR, 'storage')
+
+# Docker
+DOCKER_COMPOSE_STAGE34_FILE = 'docker-compose.stage34.yml'
+DOCKER_COMPOSE_DEFAULT_FILE = 'docker-compose.yml'
+DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.temp.yml'
+DOCKER_COMPOSE_BIN_PATH = '/usr/local/bin/docker-compose'
+DOCKER_BIN_PATH = '/usr/local/bin/docker'
+
+
+# Nginx
+NGINX_CONF_PATH = os.path.join(PROJECT_DIR, 'nginx', 'conf.d')
+NGINX_BIN_PATH = '/usr/local/bin/nginx'
 
 
 # Celery Configurations
-
 REDIS_URL = 'redis://0.0.0.0:6379/0'
 BROKER_URL = [REDIS_URL]
 CELERY_RESULT_BACKEND = REDIS_URL
