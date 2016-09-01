@@ -1,0 +1,19 @@
+<div bsModal #infoModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" (click)="hideModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Stage Endpoint.</h4>
+            </div>
+            <div class="modal-body">
+                <span *ngIf="stage">
+                    <p *ngIf="!stage.endpoint" class="endpoint">not provisioned yet</p>
+                    <a *ngIf="stage.endpoint" class="endpoint" target="_blank"
+                        [attr.href]="stage.endpoint">http://{{ stage.endpoint }}</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
