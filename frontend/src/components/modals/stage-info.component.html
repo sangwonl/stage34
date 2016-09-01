@@ -9,7 +9,9 @@
             </div>
             <div class="modal-body">
                 <span *ngIf="stage">
-                    <p class="endpoint">{{ stage.endpoint || "not provisioned yet" }}</p>
+                    <p *ngIf="!stage.endpoint" class="endpoint">not provisioned yet</p>
+                    <a *ngIf="stage.endpoint" class="endpoint" target="_blank"
+                        [attr.href]="stage.endpoint">http://{{ stage.endpoint }}</a>
                 </span>
             </div>
         </div>

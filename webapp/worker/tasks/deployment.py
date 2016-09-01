@@ -10,6 +10,8 @@ from fabric.context_managers import lcd
 from libs.utils.github import GithubAgent
 from libs.utils.data import merge_dicts
 
+from api.models.resources import Stage
+
 import os
 import yaml
 import json
@@ -26,7 +28,7 @@ def task_provision_stage(github_access_key, stage_id, repo, branch):
     compose_data = {}
 
     # find docker-compose.stage34.yml, if not then error
-    repo_home = os.path.join(settings.REPOSITORY_HOME, stage_id)
+    repo_home = os.path.join(settings.REPOSITORY_HOME, str(stage_id))
     stage34_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_STAGE34_FILE)
     if not os.path.exists(stage34_compose_path):
         return 'error'
@@ -70,6 +72,9 @@ def task_provision_stage(github_access_key, stage_id, repo, branch):
     container_info = json.loads(out)
     host_port = container_info[0]['NetworkSettings']['Ports'].values()[0][0]['HostPort']
 
+    # add stage host into /etc/hosts
+    local("sudo {0} '127.0.0.1    {1}.{2}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_id, settings.STAGE34_HOST))
+
     # add a nginx conf with proxy pass to the host port
     nginx_templ_path = os.path.join(settings.WEBAPP_DIR, 'worker', 'tasks', 'templates', 'stage_nginx.conf')
     with open(nginx_templ_path, 'r') as f:
@@ -90,5 +95,5 @@ def task_provision_stage(github_access_key, stage_id, repo, branch):
         local('{0} -p nginx -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH))
 
     # update stage status and connect info
-    pass
-
+    endpoint = 'http://{0}.{1}:{2}'.format(stage_id, settings.STAGE34_HOST, settings.STAGE34_PORT)
+    Stage.objects.update(status='running', endpoint=endpoint)

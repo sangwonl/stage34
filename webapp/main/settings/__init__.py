@@ -33,6 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 STAGE34_HOST = 'stage34.io'
+STAGE34_PORT = '8000'
 
 # Application definition
 INSTALLED_APPS = [
@@ -149,7 +150,7 @@ GITHUB_API = {
     'authorize_url': 'https://github.com/login/oauth/authorize',
     'access_token_url': 'https://github.com/login/oauth/access_token',
     'api_base_url': 'https://api.github.com',
-    'redirect_uri': 'http://localhost:8000/auth/github/callback/'
+    'redirect_uri': 'http://stage34.io:8000/auth/github/callback/'
 }
 
 
@@ -163,6 +164,10 @@ DOCKER_COMPOSE_DEFAULT_FILE = 'docker-compose.yml'
 DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.temp.yml'
 DOCKER_COMPOSE_BIN_PATH = '/usr/local/bin/docker-compose'
 DOCKER_BIN_PATH = '/usr/local/bin/docker'
+
+
+# Host Updater
+ETC_HOSTS_UPDATER_PATH = os.path.join(PROJECT_DIR, 'etc', 'scripts', 'host_updater.sh')
 
 
 # Nginx
