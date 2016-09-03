@@ -69,7 +69,6 @@ export class DashComponent implements OnInit {
     private onCreateNewStage(event: any) {
         let newStageInfo = event.value;
         let runOnClose = newStageInfo.runOnClose;
-        delete newStageInfo['runOnClose'];
 
         this.stageService.createStage(newStageInfo).then((stage: Stage) => {
             this.refreshStages();
