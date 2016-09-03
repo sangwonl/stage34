@@ -18,7 +18,7 @@ import json
 
 
 @shared_task(queue='q_default')
-def task_provision_stage(github_access_key, stage_id, repo, branch):
+def task_provision_stage(github_access_key, stage_id, repo, branch, run_on_create):
     github_agent = GithubAgent(github_access_key)
 
     # clone the repository on the directory
@@ -62,6 +62,11 @@ def task_provision_stage(github_access_key, stage_id, repo, branch):
     with open(temp_compose_path, 'w') as f:
         yaml.dump(compose_data, f, default_flow_style=False)
 
+    # skip running containers updating stage status to paused if not run_on_create 
+    if not run_on_create:
+        Stage.objects.filter(id=stage_id).update(status='paused')
+        return 'ok'
+
     # run docker compose with docker-compose.temp.yml
     with lcd(repo_home):
         local('{0} -f {1} up -d'.format(settings.DOCKER_COMPOSE_BIN_PATH, settings.DOCKER_COMPOSE_TEMP_FILE))
@@ -96,4 +101,6 @@ def task_provision_stage(github_access_key, stage_id, repo, branch):
 
     # update stage status and connect info
     endpoint = 'http://{0}.{1}:{2}'.format(stage_id, settings.STAGE34_HOST, settings.STAGE34_PORT)
-    Stage.objects.update(status='running', endpoint=endpoint)
+    Stage.objects.filter(id=stage_id).update(status='running', endpoint=endpoint)
+
+    return 'ok'

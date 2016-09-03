@@ -25,13 +25,14 @@ export class StageCardComponent implements OnInit {
 
     private statusIconClass() {
         return {
-            'fa-stop': this.stage.status == 'running',
-            'fa-play': this.stage.status =='paused'
+            'fa-spinner fa-pulse fa-fw': this.stage.status === 'creating',
+            'fa-stop': this.stage.status === 'running',
+            'fa-play': this.stage.status ==='paused'
         }
     }
 
     private canTrash() {
-        return this.stage && this.stage.status == 'paused';
+        return this.stage && this.stage.status === 'paused';
     }
 
     private onInfoClicked() {
@@ -39,7 +40,9 @@ export class StageCardComponent implements OnInit {
     }
 
     private onStatusClicked() {
-        this.toggleStatus.emit({value: this.stage});
+        if (['running', 'paused'].includes(this.stage.status)) {
+            this.toggleStatus.emit({value: this.stage});
+        }
     }
 
     private onNewClicked() {

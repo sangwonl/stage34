@@ -39,8 +39,9 @@ class StageRootHandler(AuthRequiredMixin, View):
         json_body = json.loads(request.body)
         title = json_body.get('title')
         repo = json_body.get('repo')
-        default_branch= json_body.get('default_branch')
         branch= json_body.get('branch')
+        default_branch= json_body.get('default_branch')
+        run_on_create = json_body.get('run_on_create', False)
 
         if not (title and repo and default_branch and branch):
             return JSENDError(status_code=400, msg='invalid stage info')
@@ -58,7 +59,7 @@ class StageRootHandler(AuthRequiredMixin, View):
         )
 
         github_access_key = request.user.jwt_payload.get('access_token')
-        task_provision_stage.apply_async(args=[github_access_key, stage.id, repo, branch])
+        task_provision_stage.apply_async(args=[github_access_key, stage.id, repo, branch, run_on_create])
 
         stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
         return JSENDSuccess(status_code=200, data=stage_dict)

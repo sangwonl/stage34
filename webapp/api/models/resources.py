@@ -41,7 +41,7 @@ class Stage(models.Model):
     org = models.ForeignKey(Organization, on_delete=models.CASCADE)
     title = models.CharField(max_length=128, default='')
     endpoint = models.CharField(max_length=256, default='')
-    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='running')
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='creating')
     repo = models.CharField(max_length=256, default='')
     default_branch = models.CharField(max_length=256, default='')
     branch = models.CharField(max_length=256, default='')
