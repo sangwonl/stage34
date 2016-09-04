@@ -40,7 +40,6 @@ class Stage(models.Model):
 
     org = models.ForeignKey(Organization, on_delete=models.CASCADE)
     title = models.CharField(max_length=128, default='')
-    endpoint = models.CharField(max_length=256, default='')
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='creating')
     repo = models.CharField(max_length=256, default='')
     default_branch = models.CharField(max_length=256, default='')
@@ -50,3 +49,7 @@ class Stage(models.Model):
 
     class Meta:
         db_table = 'stages'
+
+    @property
+    def endpoint(self):
+        return 'http://{0}.{1}:{2}'.format(self.id, settings.STAGE34_HOST, settings.STAGE34_PORT)

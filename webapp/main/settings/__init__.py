@@ -155,7 +155,7 @@ GITHUB_API = {
 
 
 # Stage Repository
-REPOSITORY_HOME = os.path.join(WEBAPP_DIR, 'storage')
+STORAGE_HOME = os.path.join(WEBAPP_DIR, 'storage')
 
 
 # Docker

@@ -1,11 +1,11 @@
 from django.views import View
 from django.conf import settings
-from django.core import serializers
-from django.forms import model_to_dict
 
 from api.helpers.mixins import AuthRequiredMixin
 from api.helpers.http.jsend import JSENDSuccess, JSENDError
 from api.models.resources import Membership, Stage
+
+from libs.utils.model_ext import model_to_dict
 
 from worker.tasks.deployment import task_provision_stage
 
@@ -100,7 +100,6 @@ class StageDetailHandler(AuthRequiredMixin, View):
         stage.default_branch = json_body.get('default_branch', stage.default_branch)
         stage.branch = json_body.get('branch', stage.branch)
         stage.status = json_body.get('status', stage.status)
-        stage.endpoint = json_body.get('endpoint', stage.endpoint)
         stage.save()
 
         stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
