@@ -25,7 +25,7 @@ export class StageCardComponent implements OnInit {
 
     private statusIconClass() {
         return {
-            'fa-spinner fa-pulse fa-fw': this.stage.status === 'creating',
+            'fa-spinner fa-pulse fa-fw': ['creating', 'changing'].includes(this.stage.status),
             'fa-stop': this.stage.status === 'running',
             'fa-play': this.stage.status ==='paused'
         }

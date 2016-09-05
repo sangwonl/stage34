@@ -60,7 +60,7 @@ export class StageService {
         this.setAuthorizationHeader(headers);
         return this.http.delete(url, { headers: headers })
             .toPromise()
-            .then(response => { return response.status === 204 ? stage : null; })
+            .then(response => {})
             .catch(this.handleError);       
     }
 
@@ -75,7 +75,7 @@ export class StageService {
         this.setAuthorizationHeader(headers);
         return this.http.put(url, body, { headers: headers })
             .toPromise()
-            .then(response => { return response.status === 204 ? stageCopy : stage; })
+            .then(response => {})
             .catch(this.handleError);
     }
 

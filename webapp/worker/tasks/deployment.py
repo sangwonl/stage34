@@ -55,8 +55,8 @@ def task_provision_stage(github_access_key, stage_id, repo, branch, run_on_creat
 
 
 @shared_task(queue='q_default')
-def task_change_stage_status(github_access_key, stage_id, action):
-    if action not in ('start', 'stop'):
+def task_change_stage_status(github_access_key, stage_id, new_status):
+    if new_status not in ('running', 'paused'):
         return 'error'
 
     stage = _get_stage_by_id(stage_id)
@@ -68,17 +68,12 @@ def task_change_stage_status(github_access_key, stage_id, action):
 
     # start or stop containers accoding to `action`
     result = False
-    new_status = ''
-    if action == 'start':
-        new_status = 'running'
+    if new_status == 'running':
         result = provision_backend.start()
-    elif action == 'stop':
-        new_status = 'paused'
+    elif new_status == 'paused':
         result = provision_backend.stop()
-
-    if not result or not new_status:
-        return 'error'
 
     # update stage status
     _udpate_stage_status(stage_id, new_status)
+    return 'ok'
  

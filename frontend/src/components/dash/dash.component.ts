@@ -56,8 +56,8 @@ export class DashComponent implements OnInit {
 
     private onToggleStageStatus(event: any) {
         let targetStage: Stage = event.value;
-        this.stageService.toggleStatus(targetStage).then((stage: Stage) => {
-            targetStage.status = stage.status;   
+        this.stageService.toggleStatus(targetStage).then(() => {
+            targetStage.status = 'changing';
             // this.refreshStages();
         });
     }
@@ -77,8 +77,8 @@ export class DashComponent implements OnInit {
 
     private onTrashStage(event: any) {
         let targetStage: Stage = event.value;
-        this.stageService.deleteStage(targetStage).then((stage: Stage) => {
-            this.stages = this.stages.filter(s => s !== stage);
+        this.stageService.deleteStage(targetStage).then(() => {
+            this.stages = this.stages.filter(s => s !== targetStage);
             // this.refreshStages();
         })
     }
