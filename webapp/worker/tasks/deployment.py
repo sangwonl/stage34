@@ -47,3 +47,36 @@ def task_provision_stage(github_access_key, stage_id, repo, branch, run_on_creat
     # update stage status and connect info
     _udpate_stage_status('running')
     return 'ok'
+
+
+@shared_task(queue='q_default')
+def task_change_stage_status(github_access_key, stage_id, action):
+    def _udpate_stage_status(status):
+        Stage.objects.filter(id=stage_id).update(status=status)
+
+    if action not in ('start', 'stop'):
+        return 'error'
+
+    stage = Stage.objects.filter(id=stage_id).first()
+    if not stage:
+        return 'error'
+
+    # get proper provision backend
+    provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
+
+    # start or stop containers accoding to `action`
+    result = False
+    new_status = ''
+    if action == 'start':
+        new_status = 'running'
+        result = provision_backend.start()
+    elif action == 'stop':
+        new_status = 'paused'
+        result = provision_backend.stop()
+
+    if not result or not new_status:
+        return 'error'
+
+    # update stage status
+    _udpate_stage_status(new_status)
+ 
