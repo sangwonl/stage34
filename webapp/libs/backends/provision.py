@@ -49,13 +49,13 @@ class ProvisionBackened(object):
 
 
 class DockerComposeLocal(ProvisionBackened):
-    def _get_docker_compose_cmd(self):
-        return '{0} -f {1}'.format(settings.DOCKER_COMPOSE_BIN_PATH, settings.DOCKER_COMPOSE_TEMP_FILE)
-
-    def _docker_compose_up(self, recreate):
-        compose_cmd = self._get_docker_compose_cmd()
-        recreate_opt = '' if recreate else '--no-recreate'
-        local('{0} up {1} -d'.format(compose_cmd, recreate_opt))
+    def _exec_docker_compose_cmd(self, cmd, *args):
+        compose_cmd = '{0} -f {1} {2} {3}'.format(
+            settings.DOCKER_COMPOSE_BIN_PATH,
+            settings.DOCKER_COMPOSE_TEMP_FILE,
+            cmd, ' '.join(args) if args else ''
+        )
+        local(compose_cmd)
 
     def _docker_inspect(self, container_name):
         docker_inspect_cmd = '{0} inspect {1}'.format(settings.DOCKER_BIN_PATH, container_name) 
@@ -127,7 +127,10 @@ class DockerComposeLocal(ProvisionBackened):
         # docker compose up
         repo_home = self._get_repo_dir()
         with lcd(repo_home): 
-            self._docker_compose_up(recreate)
+            args = ['-d']
+            if recreate:
+                args.append('--no-recreate')
+            self._exec_docker_compose_cmd('up', *args)
 
         # inpect host port of the entry container (full name is combined dir + app name + numbering)
         entry_name = self.stage34_data['entry']
@@ -148,7 +151,15 @@ class DockerComposeLocal(ProvisionBackened):
         raise NotImplemented
 
     def start(self):
-        raise NotImplemented
+        repo_home = self._get_repo_dir()
+        with lcd(repo_home): 
+            self._exec_docker_compose_cmd('start')
+
+        # activate nginx
 
     def stop(self):
-        raise NotImplemented
+        repo_home = self._get_repo_dir()
+        with lcd(repo_home): 
+            self._exec_docker_compose_cmd('stop')
+
+        # deactivate nginx
