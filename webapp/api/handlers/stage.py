@@ -9,7 +9,8 @@ from libs.utils.model_ext import model_to_dict
 
 from worker.tasks.deployment import (
     task_provision_stage,
-    task_change_stage_status
+    task_change_stage_status,
+    task_delete_stage
 )
 
 import json
@@ -127,6 +128,7 @@ class StageDetailHandler(AuthRequiredMixin, View):
         if not stage:
             return JSENDError(status_code=404, msg='stage not found')
 
-        stage.delete()
+        github_access_key = request.user.jwt_payload.get('access_token')
+        task_delete_stage.apply_async(args=[github_access_key, stage_id])
 
         return JSENDSuccess(status_code=204)

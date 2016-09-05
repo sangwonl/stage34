@@ -15,6 +15,10 @@ def _get_stage_by_id(stage_id):
     return Stage.objects.filter(id=stage_id).first()
 
 
+def _delete_stage_by_id(stage_id):
+    Stage.objects.filter(id=stage_id).delete()
+
+
 @shared_task(queue='q_default')
 def task_provision_stage(github_access_key, stage_id, repo, branch, run_on_create):
     # get proper provision backend
@@ -69,7 +73,6 @@ def task_change_stage_status(github_access_key, stage_id, new_status):
     # load docker compose file
     result = provision_backend.load_compose_file()
     if not result:
-        _udpate_stage_status(stage_id, 'paused')
         return 'error'
 
     # start or stop containers accoding to `action`
@@ -83,3 +86,29 @@ def task_change_stage_status(github_access_key, stage_id, new_status):
     _udpate_stage_status(stage_id, new_status)
     return 'ok'
  
+
+@shared_task(queue='q_default')
+def task_delete_stage(github_access_key, stage_id):
+    stage = _get_stage_by_id(stage_id)
+    if not stage:
+        return 'error'
+
+    if stage.status not in ('paused'):
+        return 'error'
+
+    # get proper provision backend
+    provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
+
+    # load docker compose file
+    result = provision_backend.load_compose_file()
+    if not result:
+        return 'error'
+
+    # tear down stage
+    result = provision_backend.down()
+    if not result:
+        return 'error'
+
+    # delete stage
+    _delete_stage_by_id(stage_id)
+    return 'ok'

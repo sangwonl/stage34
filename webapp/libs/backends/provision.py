@@ -9,6 +9,7 @@ from libs.utils.data import merge_dicts
 import os
 import yaml
 import json
+import shutil
 
 
 class ProvisionBackened(object):
@@ -92,7 +93,8 @@ class DockerComposeLocal(ProvisionBackened):
 
     def _del_nginx_conf(self, container_name):
         nginx_conf_path = os.path.join(settings.NGINX_CONF_PATH, '{}.conf'.format(container_name))
-        os.remove(nginx_conf_path) 
+        if os.path.exists(nginx_conf_path):
+            os.remove(nginx_conf_path) 
 
     def _reload_nginx_conf(self):
         with lcd(settings.PROJECT_DIR):
@@ -169,11 +171,23 @@ class DockerComposeLocal(ProvisionBackened):
 
         # prepare nginx proxy pass
         self._prepare_nginx_proxy(entry_container_name)
-
         return True
 
     def down(self):
-        raise NotImplemented
+        repo_home = self._get_repo_dir()
+        with lcd(repo_home): 
+            self._exec_docker_compose_cmd('down')
+
+        # delete repo
+        if os.path.exists(repo_home):
+            shutil.rmtree(repo_home)
+
+        # get entry container name
+        entry_container_name = self._get_entry_container_name()  
+
+        # delete nginx proxy conf and reload
+        self._disable_nginx_proxy(entry_container_name)
+        return True
 
     def start(self):
         repo_home = self._get_repo_dir()
@@ -185,6 +199,7 @@ class DockerComposeLocal(ProvisionBackened):
 
         # prepare nginx proxy pass
         self._prepare_nginx_proxy(entry_container_name)
+        return True
 
     def stop(self):
         repo_home = self._get_repo_dir()
@@ -196,3 +211,4 @@ class DockerComposeLocal(ProvisionBackened):
 
         # delete nginx proxy conf and reload
         self._disable_nginx_proxy(entry_container_name)
+        return True
