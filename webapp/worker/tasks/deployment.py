@@ -66,6 +66,12 @@ def task_change_stage_status(github_access_key, stage_id, new_status):
     # get proper provision backend
     provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
 
+    # load docker compose file
+    result = provision_backend.load_compose_file()
+    if not result:
+        _udpate_stage_status(stage_id, 'paused')
+        return 'error'
+
     # start or stop containers accoding to `action`
     result = False
     if new_status == 'running':
