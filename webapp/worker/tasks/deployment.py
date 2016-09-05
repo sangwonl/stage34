@@ -4,7 +4,7 @@ from celery import shared_task
 
 from api.models.resources import Stage
 
-from worker.tasks.helpers import DockerComposeLocal
+from libs.backends.provision import DockerComposeLocal
 
 
 @shared_task(queue='q_default')
