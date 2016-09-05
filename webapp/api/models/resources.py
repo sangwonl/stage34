@@ -34,6 +34,7 @@ class Membership(models.Model):
 class Stage(models.Model):
     STATUS_CHOICES = (
         ('creating', 'Creating'),
+        ('changing', 'Changing'),
         ('running', 'Running'),
         ('paused', 'Paused'),
     )
@@ -52,4 +53,6 @@ class Stage(models.Model):
 
     @property
     def endpoint(self):
-        return 'http://{0}.{1}:{2}'.format(self.id, settings.STAGE34_HOST, settings.STAGE34_PORT)
+        if self.status == 'running':
+            return 'http://{0}.{1}:{2}'.format(self.id, settings.STAGE34_HOST, settings.STAGE34_PORT)
+        return ''

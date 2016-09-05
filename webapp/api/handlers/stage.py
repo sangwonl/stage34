@@ -7,7 +7,11 @@ from api.models.resources import Membership, Stage
 
 from libs.utils.model_ext import model_to_dict
 
-from worker.tasks.deployment import task_provision_stage
+from worker.tasks.deployment import (
+    task_provision_stage,
+    task_change_stage_status,
+    task_delete_stage
+)
 
 import json
 import jwt
@@ -86,6 +90,11 @@ class StageDetailHandler(AuthRequiredMixin, View):
         return JSENDSuccess(status_code=200, data=stage_dict)
 
     def put(self, request, stage_id, *args, **kwargs):
+        json_body = json.loads(request.body)
+        new_status = json_body.get('status')
+        if not new_status or new_status not in ('running', 'paused'):
+            return JSENDError(status_code=400, msg='invalid stage status')
+
         org = Membership.get_org_of_user(request.user)
         if not org:
             return JSENDError(status_code=400, msg='org not found')
@@ -94,16 +103,21 @@ class StageDetailHandler(AuthRequiredMixin, View):
         if not stage:
             return JSENDError(status_code=404, msg='stage not found')
 
-        json_body = json.loads(request.body)
+        cur_status = stage.status
+        if cur_status != new_status:
+            github_access_key = request.user.jwt_payload.get('access_token')
+            task_change_stage_status.apply_async(args=[github_access_key, stage_id, new_status])
+            new_status = 'changing'
+
         stage.title = json_body.get('title', stage.title)
         stage.repo = json_body.get('repo', stage.repo)
         stage.default_branch = json_body.get('default_branch', stage.default_branch)
         stage.branch = json_body.get('branch', stage.branch)
-        stage.status = json_body.get('status', stage.status)
+        stage.status = new_status
         stage.save()
 
         stage_dict = model_to_dict(stage, fields=SERIALIZE_FIELDS)
-        return JSENDSuccess(status_code=204, data=stage_dict)
+        return JSENDSuccess(status_code=204)
 
     def delete(self, request, stage_id, *args, **kwargs):
         org = Membership.get_org_of_user(request.user)
@@ -114,6 +128,7 @@ class StageDetailHandler(AuthRequiredMixin, View):
         if not stage:
             return JSENDError(status_code=404, msg='stage not found')
 
-        stage.delete()
+        github_access_key = request.user.jwt_payload.get('access_token')
+        task_delete_stage.apply_async(args=[github_access_key, stage_id])
 
-        return JSENDSuccess(status_code=204, data={})
+        return JSENDSuccess(status_code=204)

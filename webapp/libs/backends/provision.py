@@ -9,6 +9,7 @@ from libs.utils.data import merge_dicts
 import os
 import yaml
 import json
+import shutil
 
 
 class ProvisionBackened(object):
@@ -49,20 +50,34 @@ class ProvisionBackened(object):
 
 
 class DockerComposeLocal(ProvisionBackened):
-    def _get_docker_compose_cmd(self):
-        return '{0} -f {1}'.format(settings.DOCKER_COMPOSE_BIN_PATH, settings.DOCKER_COMPOSE_TEMP_FILE)
-
-    def _docker_compose_up(self, recreate):
-        compose_cmd = self._get_docker_compose_cmd()
-        recreate_opt = '' if recreate else '--no-recreate'
-        local('{0} up {1} -d'.format(compose_cmd, recreate_opt))
+    def _exec_docker_compose_cmd(self, cmd, *args):
+        compose_cmd = '{0} -f {1} {2} {3}'.format(
+            settings.DOCKER_COMPOSE_BIN_PATH,
+            settings.DOCKER_COMPOSE_TEMP_FILE,
+            cmd, ' '.join(args) if args else ''
+        )
+        local(compose_cmd)
 
     def _docker_inspect(self, container_name):
         docker_inspect_cmd = '{0} inspect {1}'.format(settings.DOCKER_BIN_PATH, container_name) 
         out = local(docker_inspect_cmd, capture=True)
         return json.loads(out)
 
-    def _add_and_reload_nginx_conf(self, stage_host, host_port, container_name):
+    def _get_entry_container_name(self):
+        # naming of the entry container (stage id + app name + numbering)
+        entry_name = self.stage34_data['entry']
+        return '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
+
+    def _get_stage_host_and_host_port(self, container_name):
+        container_info = self._docker_inspect(container_name)
+        host_port = container_info[0]['NetworkSettings']['Ports'].values()[0][0]['HostPort']
+        stage_host = '{0}.{1}'.format(self.stage_unique_token, settings.STAGE34_HOST)
+        return stage_host, host_port
+
+    def _put_stage_host_local(self, stage_host):
+        local("sudo {0} '127.0.0.1    {1}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_host))
+
+    def _add_nginx_conf(self, stage_host, host_port, container_name):
         nginx_templ_path = os.path.join(settings.WEBAPP_DIR, 'worker', 'tasks', 'templates', 'stage_nginx.conf')
         with open(nginx_templ_path, 'r') as f:
             nginx_templ = f.read()
@@ -76,11 +91,30 @@ class DockerComposeLocal(ProvisionBackened):
         with open(nginx_conf_path, 'w') as f:
             f.write(stage_nginx_conf)
 
+    def _del_nginx_conf(self, container_name):
+        nginx_conf_path = os.path.join(settings.NGINX_CONF_PATH, '{}.conf'.format(container_name))
+        if os.path.exists(nginx_conf_path):
+            os.remove(nginx_conf_path) 
+
+    def _reload_nginx_conf(self):
         with lcd(settings.PROJECT_DIR):
             local('{0} -p nginx -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH))
 
-    def _put_stage_host_local(self, stage_host):
-        local("sudo {0} '127.0.0.1    {1}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_host))
+    def _prepare_nginx_proxy(self, container_name):
+        # inpect host port and stage host name
+        stage_host, host_port = self._get_stage_host_and_host_port(container_name)
+
+        # add stage host into /etc/hosts
+        self._put_stage_host_local(stage_host)
+
+        # add a nginx conf with proxy pass to the host port and reload nginx
+        self._add_nginx_conf(stage_host, host_port, container_name)
+        self._reload_nginx_conf()
+
+    def _disable_nginx_proxy(self, container_name):
+        # delete the nginx conf and reload nginx
+        self._del_nginx_conf(container_name)
+        self._reload_nginx_conf()
 
     def load_compose_file(self):
         # find docker-compose.stage34.yml, if not then error
@@ -127,28 +161,54 @@ class DockerComposeLocal(ProvisionBackened):
         # docker compose up
         repo_home = self._get_repo_dir()
         with lcd(repo_home): 
-            self._docker_compose_up(recreate)
+            args = ['-d']
+            if recreate:
+                args.append('--no-recreate')
+            self._exec_docker_compose_cmd('up', *args)
 
-        # inpect host port of the entry container (full name is combined dir + app name + numbering)
-        entry_name = self.stage34_data['entry']
-        entry_container_name = '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
-        container_info = self._docker_inspect(entry_container_name)
-        host_port = container_info[0]['NetworkSettings']['Ports'].values()[0][0]['HostPort']
+        # get entry container name
+        entry_container_name = self._get_entry_container_name()  
 
-        # add stage host into /etc/hosts
-        stage_host = '{0}.{1}'.format(self.stage_unique_token, settings.STAGE34_HOST)
-        self._put_stage_host_local(stage_host)
-
-        # add a nginx conf with proxy pass to the host port and reload nginx
-        self._add_and_reload_nginx_conf(stage_host, host_port, entry_container_name)
-
+        # prepare nginx proxy pass
+        self._prepare_nginx_proxy(entry_container_name)
         return True
 
     def down(self):
-        raise NotImplemented
+        repo_home = self._get_repo_dir()
+        with lcd(repo_home): 
+            self._exec_docker_compose_cmd('down')
+
+        # delete repo
+        if os.path.exists(repo_home):
+            shutil.rmtree(repo_home)
+
+        # get entry container name
+        entry_container_name = self._get_entry_container_name()  
+
+        # delete nginx proxy conf and reload
+        self._disable_nginx_proxy(entry_container_name)
+        return True
 
     def start(self):
-        raise NotImplemented
+        repo_home = self._get_repo_dir()
+        with lcd(repo_home): 
+            self._exec_docker_compose_cmd('start')
+
+        # get entry container name
+        entry_container_name = self._get_entry_container_name()  
+
+        # prepare nginx proxy pass
+        self._prepare_nginx_proxy(entry_container_name)
+        return True
 
     def stop(self):
-        raise NotImplemented
+        repo_home = self._get_repo_dir()
+        with lcd(repo_home): 
+            self._exec_docker_compose_cmd('stop')
+
+        # get entry container name
+        entry_container_name = self._get_entry_container_name()  
+
+        # delete nginx proxy conf and reload
+        self._disable_nginx_proxy(entry_container_name)
+        return True

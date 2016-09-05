@@ -11,7 +11,7 @@
                 <span *ngIf="stage">
                     <p *ngIf="!stage.endpoint" class="endpoint">not provisioned yet</p>
                     <a *ngIf="stage.endpoint" class="endpoint" target="_blank"
-                        [attr.href]="stage.endpoint">http://{{ stage.endpoint }}</a>
+                        [attr.href]="stage.endpoint">{{ stage.endpoint }}</a>
                 </span>
             </div>
         </div>
