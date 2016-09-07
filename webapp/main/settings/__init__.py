@@ -57,8 +57,8 @@ INSTALLED_APPS += [
 
 AUTH_USER_MODEL = 'api.User'
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'api.helpers.backends.JWTAuthenticationBackend'
+    'api.helpers.backends.JWTAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -66,8 +66,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'api.helpers.middlewares.JWTAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -159,9 +159,8 @@ STORAGE_HOME = os.path.join(WEBAPP_DIR, 'storage')
 
 
 # Docker
-DOCKER_COMPOSE_STAGE34_FILE = 'docker-compose.stage34.yml'
-DOCKER_COMPOSE_DEFAULT_FILE = 'docker-compose.yml'
-DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.temp.yml'
+DOCKER_COMPOSE_STAGE34_FILE = 'stage34-services.yml'
+DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.stage34.yml'
 DOCKER_COMPOSE_BIN_PATH = '/usr/local/bin/docker-compose'
 DOCKER_BIN_PATH = '/usr/local/bin/docker'
 

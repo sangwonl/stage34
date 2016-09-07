@@ -7,6 +7,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth import get_user_model
 
+from api.models.resources import Organization, Membership, Stage
+
 
 User = get_user_model()
 
@@ -87,7 +89,22 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 
+class OrganizationAdmin(admin.ModelAdmin):
+    pass
+
+
+class MembershipAdmin(admin.ModelAdmin):
+    pass
+
+
+class StageAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(Membership, MembershipAdmin)
+admin.site.register(Stage, StageAdmin)
 
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
