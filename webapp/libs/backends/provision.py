@@ -10,6 +10,7 @@ import os
 import yaml
 import json
 import shutil
+import copy
 
 
 class ProvisionBackened(object):
@@ -18,7 +19,6 @@ class ProvisionBackened(object):
         self.repo = repo
         self.branch = branch
         self.repo_access_key = repo_access_key
-        self.compose_data = {}
         self.stage34_data = {}
 
     def _get_repo_dir(self):
@@ -65,12 +65,18 @@ class DockerComposeLocal(ProvisionBackened):
 
     def _get_entry_container_name(self):
         # naming of the entry container (stage id + app name + numbering)
-        entry_name = self.stage34_data['entry']
+        entry_name = self.stage34_data['stage34']['entry']
         return '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
 
     def _get_stage_host_and_host_port(self, container_name):
         container_info = self._docker_inspect(container_name)
-        host_port = container_info[0]['NetworkSettings']['Ports'].values()[0][0]['HostPort']
+        container_ports = container_info[0]['NetworkSettings']['Ports']
+        host_port = None
+        for port, detail in container_ports.iteritems():
+            if detail and len(detail) == 1:
+                host_port = detail[0]['HostPort']
+                break
+
         stage_host = '{0}.{1}'.format(self.stage_unique_token, settings.STAGE34_HOST)
         return stage_host, host_port
 
@@ -105,7 +111,8 @@ class DockerComposeLocal(ProvisionBackened):
         stage_host, host_port = self._get_stage_host_and_host_port(container_name)
 
         # add stage host into /etc/hosts
-        self._put_stage_host_local(stage_host)
+        if settings.ETC_HOSTS_UPDATE:
+            self._put_stage_host_local(stage_host)
 
         # add a nginx conf with proxy pass to the host port and reload nginx
         self._add_nginx_conf(stage_host, host_port, container_name)
@@ -125,36 +132,26 @@ class DockerComposeLocal(ProvisionBackened):
 
         with open(stage34_compose_path, 'r') as f:
             try:
-                stage34_compose_data = yaml.load(f)
-                self.compose_data = stage34_compose_data
+                self.stage34_data = yaml.load(f)
             except yaml.YAMLError as e:
                 return False
 
-        # find docker-compose.yml and merge with stage34 compose data, if not then skip
-        default_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_DEFAULT_FILE)
-        if os.path.exists(default_compose_path):
-            with open(default_compose_path, 'r') as f:
-                try:
-                    def_compose_data = yaml.load(f)
-                    self.compose_data = merge_dicts(def_compose_data, stage34_compose_data)
-                except yaml.YAMLError as e:
-                    return False
-
         # find stage34.entry app in compose data, if not then error
-        if ('stage34' not in self.compose_data or
-            'entry' not in self.compose_data['stage34']):
+        if ('stage34' not in self.stage34_data or 'entry' not in self.stage34_data['stage34']):
             return False
 
-        self.stage34_data = self.compose_data['stage34']
-        del self.compose_data['stage34']
         return True
 
     def prepare_provision_conf(self):
+        # prepare compose data excluding stage34
+        compose_data = copy.deepcopy(self.stage34_data)
+        del compose_data['stage34']
+
         # docker-compose.temp.yml without stage34 item
         repo_home = self._get_repo_dir()
         temp_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_TEMP_FILE)
         with open(temp_compose_path, 'w') as f:
-            yaml.dump(self.compose_data, f, default_flow_style=False)
+            yaml.dump(compose_data, f, default_flow_style=False)
         return True
 
     def up(self, recreate=False):
