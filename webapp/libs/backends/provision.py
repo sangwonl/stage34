@@ -111,7 +111,8 @@ class DockerComposeLocal(ProvisionBackened):
         stage_host, host_port = self._get_stage_host_and_host_port(container_name)
 
         # add stage host into /etc/hosts
-        self._put_stage_host_local(stage_host)
+        if settings.ETC_HOSTS_UPDATE:
+            self._put_stage_host_local(stage_host)
 
         # add a nginx conf with proxy pass to the host port and reload nginx
         self._add_nginx_conf(stage_host, host_port, container_name)

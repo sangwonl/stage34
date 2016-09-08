@@ -166,6 +166,7 @@ DOCKER_BIN_PATH = '/usr/local/bin/docker'
 
 
 # Host Updater
+ETC_HOSTS_UPDATE = True
 ETC_HOSTS_UPDATER_PATH = os.path.join(PROJECT_DIR, 'etc', 'scripts', 'host_updater.sh')
 
 
