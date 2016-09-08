@@ -70,7 +70,13 @@ class DockerComposeLocal(ProvisionBackened):
 
     def _get_stage_host_and_host_port(self, container_name):
         container_info = self._docker_inspect(container_name)
-        host_port = container_info[0]['NetworkSettings']['Ports'].values()[0][0]['HostPort']
+        container_ports = container_info[0]['NetworkSettings']['Ports']
+        host_port = None
+        for port, detail in container_ports.iteritems():
+            if detail and len(detail) == 1:
+                host_port = detail[0]['HostPort']
+                break
+
         stage_host = '{0}.{1}'.format(self.stage_unique_token, settings.STAGE34_HOST)
         return stage_host, host_port
 
@@ -130,8 +136,7 @@ class DockerComposeLocal(ProvisionBackened):
                 return False
 
         # find stage34.entry app in compose data, if not then error
-        if ('stage34' not in self.stage34_data or
-            'entry' not in self.stage34_data['stage34']):
+        if ('stage34' not in self.stage34_data or 'entry' not in self.stage34_data['stage34']):
             return False
 
         return True
