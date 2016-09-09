@@ -70,6 +70,15 @@ module.exports = {
             jQuery: 'jquery',
             jquery: 'jquery',
             $: 'jquery'
+        }),
+
+        new webpack.DefinePlugin({
+            'process.env': {
+                'CONF': JSON.stringify((function() {
+                    var exists = helpers.fileExists('./config.json');
+                    return exists ? require('../config.json') : {};
+                })())
+            }
         })
     ]
 };

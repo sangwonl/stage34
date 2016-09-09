@@ -30,6 +30,7 @@
         'angular2-in-memory-web-api': { main: 'index.js', defaultExtension: 'js' },
         'angular2-cookie': { main: 'core.js', defaultExtension: 'js' } 
     };
+    
     // var ngPackageNames = [
     //     'common',
     //     'compiler',
@@ -58,12 +59,8 @@
     System.config({
         transpiler: 'ts',
         typescriptOptions: { tsconfig: true },
-        meta: {
-            'typescript': { 'exports': 'ts' }
-        },
-        paths: {
-            'npm:': 'https://unpkg.com/'
-        },        
+        meta: { 'typescript': { 'exports': 'ts' } },
+        paths: { 'npm:': 'https://unpkg.com/' },        
         map: map,
         packages: package
     });
