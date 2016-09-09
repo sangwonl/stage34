@@ -15,7 +15,7 @@ import { appRouting } from './app.routes';
 
 import { CookieService } from 'angular2-cookie/core';
 import { AuthService } from './services/auth.service';
-import { AuthGuard } from './services/guard.service';
+import { AuthGuard, AnonymousGuard } from './services/guard.service';
 import { GithubService } from './services/github.service';
 import { StageService } from './services/stage.service';
 
@@ -44,6 +44,7 @@ import { TimeAgoPipe } from 'angular2-moment';
     CookieService,
     AuthService,
     AuthGuard,
+    AnonymousGuard,
     GithubService,
     StageService
   ],
