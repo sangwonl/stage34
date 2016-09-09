@@ -17,9 +17,8 @@
         '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
         '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
 
-        'rxjs': 'npm:rxjs',
-        'angular2-in-memory-web-api': 'npm:angular2-in-memory-web-api',
         'angular2-cookie': 'npm:angular2-cookie',
+        'rxjs': 'npm:rxjs',
         'ts': 'npm:plugin-typescript@4.0.10/lib/plugin.js',
         'typescript': 'npm:typescript@1.9.0-dev.20160409/lib/typescript.js'
     };
@@ -27,7 +26,6 @@
     var packages = {
         'app': { main: 'main.js', defaultExtension: 'js' },
         'rxjs': { main: 'rxjs.js', defaultExtension: 'js' },
-        'angular2-in-memory-web-api': { main: 'index.js', defaultExtension: 'js' },
         'angular2-cookie': { main: 'core.js', defaultExtension: 'js' } 
     };
     
