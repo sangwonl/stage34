@@ -104,7 +104,7 @@ class DockerComposeLocal(ProvisionBackened):
 
     def _reload_nginx_conf(self):
         with lcd(settings.PROJECT_DIR):
-            local('{0} -p nginx -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH))
+            local('{0} -p {1} -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH, settings.NGINX_CONF_PREFIX))
 
     def _prepare_nginx_proxy(self, container_name):
         # inpect host port and stage host name
