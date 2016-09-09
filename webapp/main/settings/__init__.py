@@ -171,7 +171,8 @@ ETC_HOSTS_UPDATER_PATH = os.path.join(PROJECT_DIR, 'etc', 'scripts', 'host_updat
 
 
 # Nginx
-NGINX_CONF_PATH = os.path.join(PROJECT_DIR, 'nginx', 'conf.d')
+NGINX_CONF_PREFIX = 'nginx'
+NGINX_CONF_PATH = os.path.join(PROJECT_DIR, NGINX_CONF_PREFIX, 'conf.d')
 NGINX_BIN_PATH = '/usr/local/bin/nginx'
 
 
