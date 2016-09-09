@@ -8,8 +8,7 @@ import { CookieService } from 'angular2-cookie/core';
 @Component({
     selector: 'login',
     templateUrl: 'login.component.html',
-    styleUrls: ['login.component.css'],
-    providers: [CookieService, GithubService]
+    styleUrls: ['login.component.css']
 })
 export class LoginComponent implements OnInit {
     private loginInProgress: boolean = false;

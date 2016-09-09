@@ -1,6 +1,5 @@
 import { Component, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
-import { ModalDirective, MODAL_DIRECTIVES, BS_VIEW_PROVIDERS } from 'ng2-bootstrap';
-import { CORE_DIRECTIVES } from '@angular/common';
+import { ModalDirective } from 'ng2-bootstrap';
 
 import { GithubService } from '../../services/github.service';
 import { Repo, Branch } from '../../models/repo';
@@ -8,10 +7,7 @@ import { Repo, Branch } from '../../models/repo';
 @Component({
     selector: 'stage-new',
     templateUrl: 'stage-new.component.html',
-    styleUrls: ['stage-new.component.css'],
-    directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES],
-    viewProviders: [BS_VIEW_PROVIDERS],
-    providers: [GithubService]
+    styleUrls: ['stage-new.component.css']
 })
 export class StageNewComponent implements AfterViewInit {
     private title: string = '';
