@@ -174,6 +174,8 @@ ETC_HOSTS_UPDATER_PATH = os.path.join(PROJECT_DIR, 'etc', 'scripts', 'host_updat
 NGINX_CONF_PREFIX = 'nginx'
 NGINX_CONF_PATH = os.path.join(PROJECT_DIR, NGINX_CONF_PREFIX, 'conf.d')
 NGINX_BIN_PATH = '/usr/local/bin/nginx'
+NGINX_STAGE_TEMPL_DIR = os.path.join(WEBAPP_DIR, 'libs', 'backends', 'templates')
+NGINX_STAGE_TEMPL = 'stage_nginx.conf'
 
 
 # Celery Configurations

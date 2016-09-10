@@ -68,7 +68,7 @@ class DockerComposeLocal(ProvisionBackened):
         entry_name = self.stage34_data['stage34']['entry']
         return '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
 
-    def _get_stage_host_and_host_port(self, container_name):
+    def _get_stage_and_host_endpoint(self, container_name):
         container_info = self._docker_inspect(container_name)
         container_ports = container_info[0]['NetworkSettings']['Ports']
         host_port = None
@@ -77,18 +77,20 @@ class DockerComposeLocal(ProvisionBackened):
                 host_port = detail[0]['HostPort']
                 break
 
-        stage_host = '{0}.{1}'.format(self.stage_unique_token, settings.STAGE34_HOST)
-        return stage_host, host_port
+        stage_sub = self.stage_unique_token
+        stage_host = settings.STAGE34_HOST
+        return stage_sub, stage_host, host_port
 
     def _put_stage_host_local(self, stage_host):
         local("sudo {0} '127.0.0.1    {1}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_host))
 
-    def _add_nginx_conf(self, stage_host, host_port, container_name):
-        nginx_templ_path = os.path.join(settings.WEBAPP_DIR, 'worker', 'tasks', 'templates', 'stage_nginx.conf')
+    def _add_nginx_conf(self, stage_sub, stage_host, host_port, container_name):
+        nginx_templ_path = os.path.join(settings.NGINX_STAGE_TEMPL_DIR, settings.NGINX_STAGE_TEMPL)
         with open(nginx_templ_path, 'r') as f:
             nginx_templ = f.read()
 
         stage_nginx_conf = Template(nginx_templ).render(
+            stage_sub=stage_sub,
             stage_host=stage_host,
             docker_host_port=host_port
         )
@@ -108,14 +110,14 @@ class DockerComposeLocal(ProvisionBackened):
 
     def _prepare_nginx_proxy(self, container_name):
         # inpect host port and stage host name
-        stage_host, host_port = self._get_stage_host_and_host_port(container_name)
+        stage_sub, stage_host, host_port = self._get_stage_and_host_endpoint(container_name)
 
         # add stage host into /etc/hosts
         if settings.ETC_HOSTS_UPDATE:
             self._put_stage_host_local(stage_host)
 
         # add a nginx conf with proxy pass to the host port and reload nginx
-        self._add_nginx_conf(stage_host, host_port, container_name)
+        self._add_nginx_conf(stage_sub, stage_host, host_port, container_name)
         self._reload_nginx_conf()
 
     def _disable_nginx_proxy(self, container_name):
