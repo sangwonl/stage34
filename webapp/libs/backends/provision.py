@@ -160,7 +160,7 @@ class DockerComposeLocal(ProvisionBackened):
         # docker compose up
         repo_home = self._get_repo_dir()
         with lcd(repo_home): 
-            args = ['-d']
+            args = ['-d', '--build']
             if recreate:
                 args.append('--no-recreate')
             self._exec_docker_compose_cmd('up', *args)
