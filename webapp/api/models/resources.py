@@ -54,6 +54,6 @@ class Stage(models.Model):
     @property
     def endpoint(self):
         if self.status == 'running':
-            port = ':{0}'.format(settings.STAGE34_PORT if settings.STAGE34_PORT != '80' else '')
+            port = ':{0}'.format(settings.STAGE34_PORT) if settings.STAGE34_PORT != '80' else ''
             return 'http://{0}.{1}{2}'.format(self.id, settings.STAGE34_HOST, port)
         return ''
