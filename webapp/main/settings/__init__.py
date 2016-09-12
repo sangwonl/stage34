@@ -202,13 +202,3 @@ CELERYBEAT_SCHEDULE = {
         'args': ('world',),
     },
 }
-
-
-try:
-    from importlib import import_module
-    env = os.environ.get('ENV', 'local')
-    custom_conf = import_module('.' + env, __name__)
-    for key in filter(lambda x: not x.startswith('__'), dir(custom_conf)):
-        globals()[key] = getattr(custom_conf, key)
-except (ImportError, AttributeError):
-    pass
