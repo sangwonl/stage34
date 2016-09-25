@@ -7,8 +7,11 @@ from api.models.resources import Stage
 from libs.backends.provision import DockerComposeLocal
 
 
-def _udpate_stage_status(stage_id, status):
-    Stage.objects.filter(id=stage_id).update(status=status)
+def _udpate_stage_status(stage_id, status, is_up=None):
+    if is_up is None:
+        Stage.objects.filter(id=stage_id).update(status=status)
+    else:
+        Stage.objects.filter(id=stage_id).update(status=status, is_up=is_up)
 
 
 def _get_stage_by_id(stage_id):
@@ -24,37 +27,29 @@ def task_provision_stage(github_access_key, stage_id, repo, branch, run_on_creat
     # get proper provision backend
     provision_backend = DockerComposeLocal(stage_id, repo, branch, github_access_key)
 
-    # clone the repository on the directory
-    result = provision_backend.clone_repository()
-    if not result:
-        _udpate_stage_status(stage_id, 'paused')
-        return 'error'
+    try:
+        # clone the repository on the directory
+        provision_backend.clone_repository()
 
-    # load docker compose file
-    result = provision_backend.load_compose_file()
-    if not result:
-        _udpate_stage_status(stage_id, 'paused')
-        return 'error'
+        # load docker compose file
+        provision_backend.load_compose_file()
 
-    # write docker provision conf
-    result = provision_backend.prepare_provision_conf()
-    if not result:
-        _udpate_stage_status(stage_id, 'paused')
-        return 'error'
+        # provisioning if run_on_create is set
+        if run_on_create:
+            provision_backend.up()
 
-    # skip running containers updating stage status to paused if not run_on_create 
-    if not run_on_create:
-        _udpate_stage_status(stage_id, 'paused')
-        return 'ok'
-
-    # docker compose up
-    result = provision_backend.up()
-    if not result:
+    except Exception as e:
+        print e
         _udpate_stage_status(stage_id, 'paused')
         return 'error'
 
     # update stage status and connect info
-    _udpate_stage_status(stage_id, 'running')
+    is_up = False
+    status = 'paused'
+    if run_on_create:
+        status = 'running'
+        is_up = True
+    _udpate_stage_status(stage_id, status, is_up)
     return 'ok'
 
 
@@ -70,20 +65,29 @@ def task_change_stage_status(github_access_key, stage_id, new_status):
     # get proper provision backend
     provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
 
-    # load docker compose file
-    result = provision_backend.load_compose_file()
-    if not result:
+    is_up = None
+    try:
+        # load docker compose file
+        provision_backend.load_compose_file()
+
+        # start or stop containers accoding to `action`
+        result = False
+        if new_status == 'running':
+            if stage.is_up:
+                provision_backend.start()
+            else:
+                provision_backend.up()
+                is_up = True
+        elif new_status == 'paused':
+            provision_backend.stop()
+
+    except Exception as e:
+        print e
+        _udpate_stage_status(stage_id, 'paused')
         return 'error'
 
-    # start or stop containers accoding to `action`
-    result = False
-    if new_status == 'running':
-        result = provision_backend.start()
-    elif new_status == 'paused':
-        result = provision_backend.stop()
-
     # update stage status
-    _udpate_stage_status(stage_id, new_status)
+    _udpate_stage_status(stage_id, new_status, is_up=is_up)
     return 'ok'
  
 
@@ -99,15 +103,15 @@ def task_delete_stage(github_access_key, stage_id):
     # get proper provision backend
     provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
 
-    # load docker compose file
-    result = provision_backend.load_compose_file()
-    if not result:
-        return 'error'
+    try:
+        # load docker compose file
+        provision_backend.load_compose_file()
 
-    # tear down stage
-    result = provision_backend.down()
-    if not result:
-        return 'error'
+        # tear down stage
+        provision_backend.down()
+
+    except Exception as e:
+        print e
 
     # delete stage
     _delete_stage_by_id(stage_id)
