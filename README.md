@@ -2,6 +2,8 @@
 Freescale Staging Environment
 ** Local Dev Environment Only (for now) **
 
+![alt tag](http://g.recordit.co/0J84vWlwC5.gif)
+
 
 ## Required
 ### For Webapp (with Celery)
