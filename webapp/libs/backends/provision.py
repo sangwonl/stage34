@@ -13,7 +13,7 @@ import shutil
 import copy
 
 
-class ProvisionBackened(object):
+class ProvisionBackend(object):
     def __init__(self, stage_unique_token, repo, branch, repo_access_key):
         self.stage_unique_token = str(stage_unique_token)
         self.repo = repo
@@ -49,7 +49,10 @@ class ProvisionBackened(object):
         raise NotImplemented
 
 
-class DockerComposeLocal(ProvisionBackened):
+class DockerComposeLocal(ProvisionBackend):
+    def __init__(self, *args):
+        super(DockerComposeLocal, self).__init__(*args)
+
     def _exec_docker_compose_cmd(self, cmd, *args):
         compose_cmd = '{0} -f {1} {2} {3}'.format(
             settings.DOCKER_COMPOSE_BIN_PATH,
@@ -65,8 +68,11 @@ class DockerComposeLocal(ProvisionBackened):
 
     def _get_entry_container_name(self):
         # naming of the entry container (stage id + app name + numbering)
-        entry_name = self.stage34_data['stage34']['entry']
-        return '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
+        container_name = ''
+        if 'stage34' in self.stage34_data:
+            entry_name = self.stage34_data['stage34']['entry']
+            container_name = '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
+        return container_name
 
     def _get_stage_and_host_endpoint(self, container_name):
         container_info = self._docker_inspect(container_name)
@@ -81,8 +87,8 @@ class DockerComposeLocal(ProvisionBackened):
         stage_host = settings.STAGE34_HOST
         return stage_sub, stage_host, host_port
 
-    def _put_stage_host_local(self, stage_host):
-        local("sudo {0} '127.0.0.1    {1}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_host))
+    def _put_stage_host_local(self, stage_sub, stage_host):
+        local("sudo {0} '127.0.0.1    {1}.{2}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_sub, stage_host))
 
     def _add_nginx_conf(self, stage_sub, stage_host, host_port, container_name):
         nginx_templ_path = os.path.join(settings.NGINX_STAGE_TEMPL_DIR, settings.NGINX_STAGE_TEMPL)
@@ -114,7 +120,7 @@ class DockerComposeLocal(ProvisionBackened):
 
         # add stage host into /etc/hosts
         if settings.ETC_HOSTS_UPDATE:
-            self._put_stage_host_local(stage_host)
+            self._put_stage_host_local(stage_sub, stage_host)
 
         # add a nginx conf with proxy pass to the host port and reload nginx
         self._add_nginx_conf(stage_sub, stage_host, host_port, container_name)
@@ -139,9 +145,8 @@ class DockerComposeLocal(ProvisionBackened):
                 return False
 
         # find stage34.entry app in compose data, if not then error
-        if ('stage34' not in self.stage34_data or 'entry' not in self.stage34_data['stage34']):
+        if 'stage34' not in self.stage34_data:
             return False
-
         return True
 
     def prepare_provision_conf(self):
@@ -181,11 +186,10 @@ class DockerComposeLocal(ProvisionBackened):
         if os.path.exists(repo_home):
             shutil.rmtree(repo_home)
 
-        # get entry container name
-        entry_container_name = self._get_entry_container_name()  
-
-        # delete nginx proxy conf and reload
-        self._disable_nginx_proxy(entry_container_name)
+        # get entry container name, delete nginx proxy conf and reload
+        entry_container_name = self._get_entry_container_name()
+        if entry_container_name:
+            self._disable_nginx_proxy(entry_container_name)
         return True
 
     def start(self):
