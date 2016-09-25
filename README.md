@@ -58,14 +58,20 @@ $ ENV=local python main/celeryworker.py worker -B --loglevel=info -Q q_default
 $ npm install
 ```
 
-#### Step6 - Serve App with Watch
+#### Step6 - Copy config file
+```
+$ cp frontend
+$ cp config.json.sample config.json
+```
+
+#### Step7 - Serve App with Watch
 ```
 $ npm start
 ```
 
-#### Step7 - Nginx
+#### Step8 - Nginx
 ```
 $ nginx -p nginx -c nginx.conf
 ```
 
-#### Step8 - Open 'http://stage34.io:8000'
+#### Step9 - Open 'http://stage34.io:8000'
