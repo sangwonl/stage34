@@ -1,5 +1,6 @@
 from django.views import View
 from django.conf import settings
+from datetime import datetime
 
 from api.helpers.mixins import AuthRequiredMixin
 from api.helpers.http.jsend import JSENDSuccess, JSENDError
@@ -13,6 +14,8 @@ from worker.tasks.deployment import (
     task_delete_stage
 )
 
+import pytz
+import os
 import json
 import jwt
 
@@ -132,3 +135,29 @@ class StageDetailHandler(AuthRequiredMixin, View):
         task_delete_stage.apply_async(args=[github_access_key, stage_id])
 
         return JSENDSuccess(status_code=204)
+
+
+class StageLogHandler(AuthRequiredMixin, View):
+    def get_log_path(self, stage_id):
+        return os.path.join(settings.STORAGE_HOME, stage_id, 'output.log')
+
+    def get(self, request, stage_id, *args, **kwargs):
+        org = Membership.get_org_of_user(request.user)
+        if not org:
+            return JSENDError(status_code=400, msg='org not found')
+
+        log_path = self.get_log_path(stage_id) 
+        if not os.path.exists(log_path):
+            return JSENDError(status_code=404, msg='log file not found')
+
+        log_msgs = []
+        with open(log_path, 'rt') as f:
+            log_msg = f.read()
+            log_msgs = [l for l in log_msg.split('\n') if l]
+
+        ts = os.path.getmtime(log_path)
+        tz = pytz.timezone(settings.TIME_ZONE)
+        dt = datetime.fromtimestamp(ts, tz=tz)
+
+        log_data = {'log_messages': log_msgs, 'log_time': dt.isoformat()}
+        return JSENDSuccess(status_code=200, data=log_data)

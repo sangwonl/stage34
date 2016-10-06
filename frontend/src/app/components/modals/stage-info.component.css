@@ -1,3 +1,8 @@
-.endpoint {
-    
+.log-box {
+    font-family: "Monaco";
+    padding: 10px;
+    background-color: black;
+    color: green;
+    overflow-y: scroll;
+    height: 500px;
 }

@@ -35,6 +35,16 @@ export class StageService {
             .catch(this.handleError);
     }
 
+    public getStageLog(id: number) {
+        let url = `${STAGE34_API_BASE}/stages/${id}/log/`;
+        let headers = new Headers();
+        this.setAuthorizationHeader(headers);
+        return this.http.get(url, { headers: headers })
+            .toPromise()
+            .then(response => response.json().data)
+            .catch(this.handleError);
+    }
+
     public createStage(stageInfo: any) {
         let newStage = new Stage(
             stageInfo.title, 
