@@ -1,6 +1,8 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { ModalDirective } from 'ng2-bootstrap';
 
+import { StageService } from '../../services/stage.service';
+
 import { Stage } from '../../models/stage';
 
 @Component({
@@ -11,12 +13,20 @@ import { Stage } from '../../models/stage';
 export class StageInfoComponent implements AfterViewInit {
     @ViewChild('infoModal') infoModal: ModalDirective;
     private stage: Stage;
+    private logData: any;
+
+    constructor(private stageService: StageService) {}
  
     ngAfterViewInit() {}
 
     public showModal(stage: Stage) {
         this.stage = stage;
-        this.infoModal.show();
+        this.stageService.getStageLog(this.stage.id).then((logData: any) => {
+            this.logData = logData;
+            this.infoModal.show();
+        }).catch((error: any) => {
+            this.infoModal.show();
+        });
     }
 
     public hideModal() { this.infoModal.hide(); }

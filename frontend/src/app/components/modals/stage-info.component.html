@@ -16,38 +16,9 @@
                 </span>
                 <h4>Log</h4>
                 <div class="log-box">
-                    aslkdfjlakwejfwae<br>
-                    wawlekdwekm<br>
-                    aslkdfjlakwejfwae<br>
-                    wawlekdwekm<br>
-                    wemwedwedwedwedwed<br>
-                    kwemdklwemdeklw<br>
-                    wemwedwedwedwedwed<br>
-                    aslkdfjlakwejfwae<br>
-                    wawlekdwekm<br>
-                    wemwedwedwedwedwed<br>
-                    kwemdklwemdeklw<br>
-                    aslkdfjlakwejfwae<br>
-                    aslkdfjlakwejfwae<br>
-                    aslkdfjlakwejfwae<br>
-                    aslkdfjlakwejfwae<br>
-                    wawlekdwekm<br>
-                    wemwedwedwedwedwed<br>
-                    kwemdklwemdeklw<br>
-                    wawlekdwekm<br>
-                    wemwedwedwedwedwed<br>
-                    kwemdklwemdeklw<br>
-                    wawlekdwekm<br>
-                    wemwedwedwedwedwed<br>
-                    kwemdklwemdeklw<br>
-                    wawlekdwekm<br>
-                    wemwedwedwedwedwed<br>
-                    kwemdklwemdeklw<br>
-                    kwemdklwemdeklw<br>
-                    aslkdfjlakwejfwae<br>
-                    wawlekdwekm<br>
-                    wemwedwedwedwedwed<br>
-                    kwemdklwemdeklw<br>
+                    <span *ngFor="let line of logData?.log_messages">
+                        {{ line }}<br>
+                    </span>
                 </div>
             </div>
         </div>
