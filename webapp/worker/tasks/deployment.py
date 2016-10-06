@@ -42,6 +42,9 @@ def task_provision_stage(github_access_key, stage_id, repo, branch, run_on_creat
         print e
         _udpate_stage_status(stage_id, 'paused')
         return 'error'
+    
+    finally:
+        provision_backend.flush_log()
 
     # update stage status and connect info
     is_up = False
@@ -86,6 +89,9 @@ def task_change_stage_status(github_access_key, stage_id, new_status):
         _udpate_stage_status(stage_id, 'paused')
         return 'error'
 
+    finally:
+        provision_backend.flush_log()
+
     # update stage status
     _udpate_stage_status(stage_id, new_status, is_up=is_up)
     return 'ok'
@@ -112,6 +118,9 @@ def task_delete_stage(github_access_key, stage_id):
 
     except Exception as e:
         print e
+
+    finally:
+        provision_backend.flush_log()
 
     # delete stage
     _delete_stage_by_id(stage_id)
