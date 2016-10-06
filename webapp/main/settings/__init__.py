@@ -118,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -192,7 +192,7 @@ CELERY_ACKS_LATE = False
 CELERYD_PREFETCH_MULTIPLIER = 4
 CELERYD_MAX_TASKS_PER_CHILD = 10        # pre-forked task pool
 CELERYD_CONCURRENCY = 4                 # # of worker processes
-CELERY_TIMEZONE = 'Asia/Seoul'
+CELERY_TIMEZONE = TIME_ZONE
 CELERY_ALWAYS_EAGER = False
 # TCELERY_RESULT_NOWAIT = False         # tornado celery nowait option
 CELERYBEAT_SCHEDULE = {
