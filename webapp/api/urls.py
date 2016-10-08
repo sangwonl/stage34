@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^api/v1/stages/', include([
         url(r'^$', stage.StageRootHandler.as_view()),
         url(r'^(?P<stage_id>\d+)/$', stage.StageDetailHandler.as_view()),
-        url(r'^(?P<stage_id>\d+)/log/$', stage.StageLogHandler.as_view())
+        url(r'^(?P<stage_id>\d+)/log/$', stage.StageLogHandler.as_view()),
+        url(r'^(?P<stage_id>\d+)/refresh/$', stage.StageRefreshHandler.as_view())
     ]))
 ]

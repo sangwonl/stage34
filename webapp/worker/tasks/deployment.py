@@ -125,3 +125,37 @@ def task_delete_stage(github_access_key, stage_id):
     # delete stage
     _delete_stage_by_id(stage_id)
     return 'ok'
+
+
+@shared_task(queue='q_default')
+def task_refresh_stage(github_access_key, stage_id):
+    stage = _get_stage_by_id(stage_id)
+    if not stage:
+        return 'error'
+
+    # get proper provision backend
+    provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
+
+    is_up = None
+    try:
+        # load docker compose file
+        provision_backend.load_compose_file()
+
+        # stop, refresh and start
+        provision_backend.stop()
+        provision_backend.pull_repository()
+        provision_backend.start()
+
+        new_status = 'running'
+
+    except Exception as e:
+        print e
+        _udpate_stage_status(stage_id, 'paused')
+        return 'error'
+
+    finally:
+        provision_backend.flush_log()
+
+    # update stage status
+    _udpate_stage_status(stage_id, new_status)
+    return 'ok'

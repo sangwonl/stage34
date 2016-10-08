@@ -25,6 +25,7 @@ export class StageInfoComponent implements AfterViewInit {
             this.logData = logData;
             this.infoModal.show();
         }).catch((error: any) => {
+            this.logData = null;
             this.infoModal.show();
         });
     }
