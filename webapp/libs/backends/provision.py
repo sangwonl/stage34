@@ -28,6 +28,9 @@ class ProvisionBackend(object):
     def clone_repository(self):
         raise NotImplemented
 
+    def pull_repository(self, hash=None):
+        raise NotImplemented
+
     def load_compose_file(self):
         raise NotImplemented
 
@@ -69,30 +72,28 @@ class DockerComposeLocal(ProvisionBackend):
         with open(temp_compose_path, 'w') as f:
             yaml.dump(compose_data, f, default_flow_style=False)
 
+    def _exec_local(self, cmd, except_cls):
+        try:
+            self.log_bucket.put(cmd)
+            output = local(cmd, capture=True)
+        except SystemExit as e:
+            output = e.message
+            raise except_cls()
+        finally:
+            self.log_bucket.put(output)
+        return output
+
     def _exec_docker_compose_cmd(self, cmd, *args):
         compose_cmd = '{0} -f {1} {2} {3}'.format(
             settings.DOCKER_COMPOSE_BIN_PATH,
             settings.DOCKER_COMPOSE_TEMP_FILE,
             cmd, ' '.join(args) if args else ''
         )
-        try:
-            self.log_bucket.put(compose_cmd)
-            output = local(compose_cmd, capture=True)
-        except SystemExit as e:
-            output = e.message
-            raise errors.DockerComposeExecError()
-        finally:
-            self.log_bucket.put(output)
+        self._exec_local(compose_cmd, errors.DockerComposeExecError)
 
     def _docker_inspect(self, container_name):
         docker_inspect_cmd = '{0} inspect {1}'.format(settings.DOCKER_BIN_PATH, container_name) 
-        try:
-            self.log_bucket.put(docker_inspect_cmd)
-            output = local(docker_inspect_cmd, capture=True)
-        except SystemExit as e:
-            output = e.message
-            self.log_bucket.put(output)
-            raise errors.DockerInspectExecError()
+        output = self._exec_local(docker_inspect_cmd, errors.DockerInspectExecError)
         return json.loads(output)
 
     def _get_entry_container_name(self):
@@ -118,14 +119,7 @@ class DockerComposeLocal(ProvisionBackend):
 
     def _put_stage_host_local(self, stage_sub, stage_host):
         cmd = "sudo {0} '127.0.0.1    {1}.{2}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_sub, stage_host)
-        try:
-            self.log_bucket.put(cmd)
-            output = local(cmd, capture=True)
-        except SystemExit as e:
-            output = e.message
-            raise errors.UpdateLocalHostError()
-        finally:
-            self.log_bucket.put(output)
+        self._exec_local(cmd, errors.UpdateLocalHostError)
 
     def _add_nginx_conf(self, stage_sub, stage_host, host_port, container_name):
         nginx_templ_path = os.path.join(settings.NGINX_STAGE_TEMPL_DIR, settings.NGINX_STAGE_TEMPL)
@@ -150,14 +144,7 @@ class DockerComposeLocal(ProvisionBackend):
     def _reload_nginx_conf(self):
         with lcd(settings.PROJECT_DIR):
             cmd = '{0} -p {1} -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH, settings.NGINX_CONF_PREFIX)
-            try:
-                self.log_bucket.put(cmd)
-                output = local(cmd, capture=True)
-            except SystemExit as e:
-                output = e.message
-                raise errors.NginxReloadError()
-            finally:
-                self.log_bucket.put(output)
+            self._exec_local(cmd, errors.NginxReloadError)
 
     def _prepare_nginx_proxy(self, container_name):
         # inpect host port and stage host name
@@ -189,14 +176,20 @@ class DockerComposeLocal(ProvisionBackend):
         repo_url = 'https://{0}@github.com/{1}.git'.format(self.repo_access_key, self.repo)
         with lcd(settings.STORAGE_HOME):
             cmd = 'git clone -b {0} {1} {2}'.format(self.branch, repo_url, self.stage_unique_token)
-            try:
-                self.log_bucket.put(cmd)
-                output = local(cmd, capture=True)
-            except SystemExit as e:
-                output = e.message
-                raise errors.GitRepoCloneError()
-            finally:
-                self.log_bucket.put(output)
+            self._exec_local(cmd, errors.GitRepoCloneError)
+
+    def pull_repository(self, commit_hash=None):
+        self.log_bucket.put('# Pulling repository...', header=True)
+
+        repo_home = self._get_repo_dir()
+        with lcd(repo_home):
+            self.log_bucket.put('repo home: {0}'.format(repo_home))
+            cmd = 'git fetch origin {0}'.format(self.branch)
+            self._exec_local(cmd, errors.GitRepoPullError)
+
+            target = 'origin/{0}'.format(self.branch) if commit_hash is None else commit_hash
+            cmd = 'git reset --hard {0}'.format(target)
+            self._exec_local(cmd, errors.GitRepoPullError)
 
     def load_compose_file(self):
         self.log_bucket.put('# Loading stage34 service config file...', header=True)

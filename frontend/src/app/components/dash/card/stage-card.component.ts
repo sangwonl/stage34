@@ -15,6 +15,7 @@ export class StageCardComponent implements OnInit {
     @Output() showInfo = new EventEmitter();
     @Output() addNew = new EventEmitter();
     @Output() trash = new EventEmitter();
+    @Output() refresh = new EventEmitter();
 
     constructor() {}
 
@@ -30,6 +31,10 @@ export class StageCardComponent implements OnInit {
 
     private canTrash() {
         return this.stage && this.stage.status === 'paused';
+    }
+
+    private canRefresh() {
+        return this.stage && this.stage.status === 'running';
     }
 
     private onInfoClicked() {
@@ -48,5 +53,9 @@ export class StageCardComponent implements OnInit {
 
     private onTrashClicked() {
         this.trash.emit({value: this.stage});
+    }
+
+    private onRefreshClicked() {
+        this.refresh.emit({value: this.stage});
     }
 }

@@ -27,10 +27,10 @@
     font-size: 14px;
     font-weight: 400;
     float: left;
-}
-
-.stage-trash {
-    float: right;
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stage-repo {

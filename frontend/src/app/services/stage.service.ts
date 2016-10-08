@@ -74,6 +74,16 @@ export class StageService {
             .catch(this.handleError);       
     }
 
+    public refreshStage(stage: Stage) {
+        let url = `${STAGE34_API_BASE}/stages/${stage.id}/refresh/`;
+        let headers: Headers = new Headers({ 'Content-Type': 'application/json' });
+        this.setAuthorizationHeader(headers);
+        return this.http.post(url, {}, { headers: headers })
+            .toPromise()
+            .then(response => {})
+            .catch(this.handleError);
+    }
+
     public toggleStatus(stage: Stage) {
         let statusToggleMap: any = {'running': 'paused', 'paused': 'running'};
         let stageCopy: Stage = Object.assign({}, stage);

@@ -2,6 +2,10 @@ class GitRepoCloneError(Exception):
     pass
 
 
+class GitRepoPullError(Exception):
+    pass
+
+
 class DockerComposeExecError(Exception):
     pass
 
