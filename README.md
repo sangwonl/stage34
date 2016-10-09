@@ -4,6 +4,27 @@ Freescale Staging Environment
 
 ![alt tag](http://g.recordit.co/0J84vWlwC5.gif)
 
+## Docker Container Structure
+
+                +-------+       +--------+  +-------+  +--------+
+      +---------+ Nginx +-------+ Webapp +--+ Redis +--+ Worker +---+
+      |         +--+----+       +----+---+  +-------+  +--+-----+   |
+      |            |  +----------+  |                     |         |
+      |            |  | Frontend |  |                     | /var/run/docker.sock
+      |            |  +----+-----+  |                     |         |
+      |            |       |        |                     |         |
+      |         +--+-------+--------+---------------------+-----+   |
++-----+-----+   |    /usr/stage34/nginx/                        |   |
+|   Stage   |   |    /usr/stage34/db/                           |   |
+| Container |   |    /usr/stage34/frontend/                     |   |
++-----------+   |    /usr/stage34/repo/                         |   |
+                +-----------------------------------------------+   |
+                |                 Volume Container              |   |
+                +-----------------------------------------------+   |
+                                                                    |
+                +-----------------------------------------------+   |
+                |                    Docker Host                +---+
+                +-----------------------------------------------+
 
 ## Required
 ### For Webapp (with Celery)
@@ -14,7 +35,6 @@ Freescale Staging Environment
 ### Frontend
 - npm 3.x.x
 - node 4.x.x
-
 
 #### Prerequisite
 If you are in local environment,
