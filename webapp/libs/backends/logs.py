@@ -5,7 +5,7 @@ import os
 
 class LogBucket(object):
     def __init__(self, name):
-        self.log_path = os.path.join(settings.STORAGE_HOME, name, 'output.log')
+        self.log_path = os.path.join(settings.STAGE_REPO_HOME, name, 'output.log')
         self.logs = []
     
     def put(self, log_message, header=False):

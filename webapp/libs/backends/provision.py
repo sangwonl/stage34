@@ -58,13 +58,19 @@ class DockerComposeLocal(ProvisionBackend):
         super(DockerComposeLocal, self).__init__(*args)
 
     def _get_repo_dir(self):
-        return os.path.join(settings.STORAGE_HOME, self.stage_unique_token)
+        return os.path.join(settings.STAGE_REPO_HOME, self.stage_unique_token)
 
     def _prepare_provision_conf(self):
         # prepare compose data excluding stage34
         compose_data = copy.deepcopy(self.stage34_data)
         assert 'stage34' in compose_data
         del compose_data['stage34']
+
+        # add stage34 network information
+        network_name = settings.DOCKER_NETWORK_BRIDGE
+        compose_data.update({'networks': {network_name: {'external': {'name': network_name}}}})
+        for svc_name, svc_data in compose_data['services'].iteritems():
+            svc_data.update({'networks': [network_name]})
 
         # docker-compose.temp.yml without stage34 item
         repo_home = self._get_repo_dir()
@@ -104,24 +110,21 @@ class DockerComposeLocal(ProvisionBackend):
             container_name = '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
         return container_name
 
-    def _get_stage_and_host_endpoint(self, container_name):
+    def _get_stage_host_and_port(self, container_name):
         container_info = self._docker_inspect(container_name)
         container_ports = container_info[0]['NetworkSettings']['Ports']
-        host_port = None
-        for port, detail in container_ports.iteritems():
-            if detail and len(detail) == 1:
-                host_port = detail[0]['HostPort']
-                break
+        port_proto = container_ports.keys()[0]
 
         stage_sub = self.stage_unique_token
         stage_host = settings.STAGE34_HOST
-        return stage_sub, stage_host, host_port
+        stage_port = port_proto.split('/')[0]
+        return stage_sub, stage_host, stage_port
 
     def _put_stage_host_local(self, stage_sub, stage_host):
         cmd = "sudo {0} '127.0.0.1    {1}.{2}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_sub, stage_host)
         self._exec_local(cmd, errors.UpdateLocalHostError)
 
-    def _add_nginx_conf(self, stage_sub, stage_host, host_port, container_name):
+    def _add_nginx_conf(self, stage_sub, stage_host, stage_port, container_name):
         nginx_templ_path = os.path.join(settings.NGINX_STAGE_TEMPL_DIR, settings.NGINX_STAGE_TEMPL)
         with open(nginx_templ_path, 'r') as f:
             nginx_templ = f.read()
@@ -129,7 +132,8 @@ class DockerComposeLocal(ProvisionBackend):
         stage_nginx_conf = Template(nginx_templ).render(
             stage_sub=stage_sub,
             stage_host=stage_host,
-            docker_host_port=host_port
+            container_host=container_name,
+            container_port=stage_port
         )
 
         nginx_conf_path = os.path.join(settings.NGINX_CONF_PATH, '{}.conf'.format(container_name))
@@ -143,20 +147,21 @@ class DockerComposeLocal(ProvisionBackend):
 
     def _reload_nginx_conf(self):
         with lcd(settings.PROJECT_DIR):
-            cmd = '{0} -p {1} -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH, settings.NGINX_CONF_PREFIX)
+            # cmd = '{0} -p {1} -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH, settings.NGINX_CONF_PREFIX)
+            cmd = 'docker kill -s HUP nginx'
             self._exec_local(cmd, errors.NginxReloadError)
 
     def _prepare_nginx_proxy(self, container_name):
         # inpect host port and stage host name
-        stage_sub, stage_host, host_port = self._get_stage_and_host_endpoint(container_name)
-        self.log_bucket.put('endpoints: stage-host({}.{}), host-port({})'.format(stage_sub, stage_host, host_port))
+        stage_sub, stage_host, stage_port = self._get_stage_host_and_port(container_name)
+        self.log_bucket.put('stage: sub({}), host({}), port({})'.format(stage_sub, stage_host, stage_port))
 
         # add stage host into /etc/hosts
-        if settings.ETC_HOSTS_UPDATE:
-            self._put_stage_host_local(stage_sub, stage_host)
+        # if settings.ETC_HOSTS_UPDATE:
+            # self._put_stage_host_local(stage_sub, stage_host)
 
         # add a nginx conf with proxy pass to the host port and reload nginx
-        self._add_nginx_conf(stage_sub, stage_host, host_port, container_name)
+        self._add_nginx_conf(stage_sub, stage_host, stage_port, container_name)
         self.log_bucket.put('added stage nginx config file')
 
         self._reload_nginx_conf()
@@ -174,7 +179,7 @@ class DockerComposeLocal(ProvisionBackend):
         self.log_bucket.put('# Git cloning repository...', header=True)
 
         repo_url = 'https://{0}@github.com/{1}.git'.format(self.repo_access_key, self.repo)
-        with lcd(settings.STORAGE_HOME):
+        with lcd(settings.STAGE_REPO_HOME):
             cmd = 'git clone -b {0} {1} {2}'.format(self.branch, repo_url, self.stage_unique_token)
             self._exec_local(cmd, errors.GitRepoCloneError)
 

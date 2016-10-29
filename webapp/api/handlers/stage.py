@@ -140,7 +140,7 @@ class StageDetailHandler(AuthRequiredMixin, View):
 
 class StageLogHandler(AuthRequiredMixin, View):
     def get_log_path(self, stage_id):
-        return os.path.join(settings.STORAGE_HOME, stage_id, 'output.log')
+        return os.path.join(settings.STAGE_REPO_HOME, stage_id, 'output.log')
 
     def get(self, request, stage_id, *args, **kwargs):
         org = Membership.get_org_of_user(request.user)

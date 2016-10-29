@@ -155,7 +155,7 @@ GITHUB_API = {
 
 
 # Stage Repository
-STORAGE_HOME = os.path.join(WEBAPP_DIR, 'storage')
+STAGE_REPO_HOME = '/usr/stage34/repo'
 
 
 # Docker
@@ -163,6 +163,7 @@ DOCKER_COMPOSE_STAGE34_FILE = 'stage34-services.yml'
 DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.stage34.yml'
 DOCKER_COMPOSE_BIN_PATH = '/usr/bin/docker-compose'
 DOCKER_BIN_PATH = '/usr/bin/docker'
+DOCKER_NETWORK_BRIDGE = 'stage34'
 
 
 # Nginx
