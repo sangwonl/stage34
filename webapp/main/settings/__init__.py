@@ -161,8 +161,16 @@ STORAGE_HOME = os.path.join(WEBAPP_DIR, 'storage')
 # Docker
 DOCKER_COMPOSE_STAGE34_FILE = 'stage34-services.yml'
 DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.stage34.yml'
-DOCKER_COMPOSE_BIN_PATH = '/usr/local/bin/docker-compose'
-DOCKER_BIN_PATH = '/usr/local/bin/docker'
+DOCKER_COMPOSE_BIN_PATH = '/usr/bin/docker-compose'
+DOCKER_BIN_PATH = '/usr/bin/docker'
+
+
+# Nginx
+NGINX_CONF_PREFIX = 'nginx'
+NGINX_CONF_PATH = '/etc/nginx/conf.d'
+NGINX_BIN_PATH = '/usr/sbin/nginx'
+NGINX_STAGE_TEMPL_DIR = os.path.join(WEBAPP_DIR, 'libs', 'backends', 'templates')
+NGINX_STAGE_TEMPL = 'stage_nginx.conf'
 
 
 # Host Updater
@@ -170,16 +178,8 @@ ETC_HOSTS_UPDATE = True
 ETC_HOSTS_UPDATER_PATH = os.path.join(PROJECT_DIR, 'etc', 'scripts', 'host_updater.sh')
 
 
-# Nginx
-NGINX_CONF_PREFIX = 'nginx'
-NGINX_CONF_PATH = os.path.join(PROJECT_DIR, NGINX_CONF_PREFIX, 'conf.d')
-NGINX_BIN_PATH = '/usr/local/bin/nginx'
-NGINX_STAGE_TEMPL_DIR = os.path.join(WEBAPP_DIR, 'libs', 'backends', 'templates')
-NGINX_STAGE_TEMPL = 'stage_nginx.conf'
-
-
 # Celery Configurations
-REDIS_URL = 'redis://0.0.0.0:6379/0'
+REDIS_URL = 'redis://redis:6379/0'
 BROKER_URL = [REDIS_URL]
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_IGNORE_RESULT = False
