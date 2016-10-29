@@ -14,10 +14,11 @@ Freescale Staging Environment
       |            |  +----+-----+  |                     |         |
       |            |       |        |                     |         |
       |         +--+-------+--------+---------------------+-----+   |
-+-----+-----+   |    /usr/stage34/nginx/                        |   |
++-----+-----+   |    /etc/nginx/                                |   |
 |   Stage   |   |    /usr/stage34/db/                           |   |
-| Container |   |    /usr/stage34/frontend/                     |   |
-+-----------+   |    /usr/stage34/repo/                         |   |
+| Container |   |    /usr/stage34/assets/                       |   |
++-----------+   |    /usr/stage34/frontend/                     |   |
+                |    /usr/stage34/repo/                         |   |
                 +-----------------------------------------------+   |
                 |                 Volume Container              |   |
                 +-----------------------------------------------+   |
