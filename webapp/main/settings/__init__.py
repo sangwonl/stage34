@@ -163,20 +163,16 @@ DOCKER_COMPOSE_STAGE34_FILE = 'stage34-services.yml'
 DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.stage34.yml'
 DOCKER_COMPOSE_BIN_PATH = '/usr/bin/docker-compose'
 DOCKER_BIN_PATH = '/usr/bin/docker'
-DOCKER_NETWORK_BRIDGE = 'stage34'
+DOCKER_NETWORK_BRIDGE = 'stage34_backend'
 
 
 # Nginx
+NGINX_CONTAINER_NAME = 'stage34-nginx'
 NGINX_CONF_PREFIX = 'nginx'
 NGINX_CONF_PATH = '/etc/nginx/conf.d'
 NGINX_BIN_PATH = '/usr/sbin/nginx'
 NGINX_STAGE_TEMPL_DIR = os.path.join(WEBAPP_DIR, 'libs', 'backends', 'templates')
 NGINX_STAGE_TEMPL = 'stage_nginx.conf'
-
-
-# Host Updater
-ETC_HOSTS_UPDATE = True
-ETC_HOSTS_UPDATER_PATH = os.path.join(PROJECT_DIR, 'etc', 'scripts', 'host_updater.sh')
 
 
 # Celery Configurations
