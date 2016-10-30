@@ -76,8 +76,10 @@ class DockerComposeLocal(ProvisionBackend):
         compose_data.update({'networks': {network_name: {'external': {'name': network_name}}}})
         for svc_name, svc_data in compose_data['services'].iteritems():
             is_entry = svc_name == entry_name
+            container_name = self.entry_container_name if is_entry else self._gen_container_name()
             svc_data.update({
-                'container_name': self.entry_container_name if is_entry else self._gen_container_name(),
+                'image': container_name,
+                'container_name': container_name,
                 'restart': 'unless-stopped',
                 'networks': [network_name]
             })
@@ -263,7 +265,8 @@ class DockerComposeLocal(ProvisionBackend):
         # down docker compose
         repo_home = self._get_repo_dir()
         with lcd(repo_home):
-            self._exec_docker_compose_cmd('down')
+            args = ['--rmi', 'all']
+            self._exec_docker_compose_cmd('down', *args)
 
         # delete repo
         if os.path.exists(repo_home):
