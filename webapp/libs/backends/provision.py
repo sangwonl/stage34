@@ -14,16 +14,21 @@ import yaml
 import json
 import shutil
 import copy
+import uuid
 
 
 class ProvisionBackend(object):
     def __init__(self, stage_unique_token, repo, branch, repo_access_key):
         self.stage_unique_token = str(stage_unique_token)
+        self.entry_container_name = None
         self.repo = repo
         self.branch = branch
         self.repo_access_key = repo_access_key
         self.stage34_data = {}
         self.log_bucket = LogBucket(self.stage_unique_token)
+
+    def _gen_container_name(self):
+        return 'stage34-{}'.format(uuid.uuid4().hex[:7])
 
     def clone_repository(self):
         raise NotImplemented
@@ -58,12 +63,26 @@ class DockerComposeLocal(ProvisionBackend):
         super(DockerComposeLocal, self).__init__(*args)
 
     def _get_repo_dir(self):
-        return os.path.join(settings.STORAGE_HOME, self.stage_unique_token)
+        return os.path.join(settings.STAGE_REPO_HOME, self.stage_unique_token)
 
     def _prepare_provision_conf(self):
         # prepare compose data excluding stage34
         compose_data = copy.deepcopy(self.stage34_data)
         assert 'stage34' in compose_data
+
+        # add stage34 network information and naming containers
+        entry_name = self.stage34_data['stage34']['entry']
+        network_name = settings.DOCKER_NETWORK_BRIDGE
+        compose_data.update({'networks': {network_name: {'external': {'name': network_name}}}})
+        for svc_name, svc_data in compose_data['services'].iteritems():
+            is_entry = svc_name == entry_name
+            svc_data.update({
+                'container_name': self.entry_container_name if is_entry else self._gen_container_name(),
+                'restart': 'unless-stopped',
+                'networks': [network_name]
+            })
+
+        assert self.entry_container_name
         del compose_data['stage34']
 
         # docker-compose.temp.yml without stage34 item
@@ -96,32 +115,21 @@ class DockerComposeLocal(ProvisionBackend):
         output = self._exec_local(docker_inspect_cmd, errors.DockerInspectExecError)
         return json.loads(output)
 
-    def _get_entry_container_name(self):
-        # naming of the entry container (stage id + app name + numbering)
-        container_name = ''
-        if 'stage34' in self.stage34_data:
-            entry_name = self.stage34_data['stage34']['entry']
-            container_name = '{0}_{1}_1'.format(self.stage_unique_token, entry_name)
-        return container_name
-
-    def _get_stage_and_host_endpoint(self, container_name):
+    def _get_stage_host_and_port(self, container_name):
         container_info = self._docker_inspect(container_name)
         container_ports = container_info[0]['NetworkSettings']['Ports']
-        host_port = None
-        for port, detail in container_ports.iteritems():
-            if detail and len(detail) == 1:
-                host_port = detail[0]['HostPort']
-                break
+        port_proto = container_ports.keys()[0]
 
         stage_sub = self.stage_unique_token
         stage_host = settings.STAGE34_HOST
-        return stage_sub, stage_host, host_port
+        stage_port = port_proto.split('/')[0]
+        return stage_sub, stage_host, stage_port
 
     def _put_stage_host_local(self, stage_sub, stage_host):
         cmd = "sudo {0} '127.0.0.1    {1}.{2}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_sub, stage_host)
         self._exec_local(cmd, errors.UpdateLocalHostError)
 
-    def _add_nginx_conf(self, stage_sub, stage_host, host_port, container_name):
+    def _add_nginx_conf(self, stage_sub, stage_host, stage_port, container_name):
         nginx_templ_path = os.path.join(settings.NGINX_STAGE_TEMPL_DIR, settings.NGINX_STAGE_TEMPL)
         with open(nginx_templ_path, 'r') as f:
             nginx_templ = f.read()
@@ -129,7 +137,8 @@ class DockerComposeLocal(ProvisionBackend):
         stage_nginx_conf = Template(nginx_templ).render(
             stage_sub=stage_sub,
             stage_host=stage_host,
-            docker_host_port=host_port
+            container_host=container_name,
+            container_port=stage_port
         )
 
         nginx_conf_path = os.path.join(settings.NGINX_CONF_PATH, '{}.conf'.format(container_name))
@@ -143,20 +152,16 @@ class DockerComposeLocal(ProvisionBackend):
 
     def _reload_nginx_conf(self):
         with lcd(settings.PROJECT_DIR):
-            cmd = '{0} -p {1} -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH, settings.NGINX_CONF_PREFIX)
+            cmd = 'docker kill -s HUP {}'.format(settings.NGINX_CONTAINER_NAME)
             self._exec_local(cmd, errors.NginxReloadError)
 
     def _prepare_nginx_proxy(self, container_name):
         # inpect host port and stage host name
-        stage_sub, stage_host, host_port = self._get_stage_and_host_endpoint(container_name)
-        self.log_bucket.put('endpoints: stage-host({}.{}), host-port({})'.format(stage_sub, stage_host, host_port))
-
-        # add stage host into /etc/hosts
-        if settings.ETC_HOSTS_UPDATE:
-            self._put_stage_host_local(stage_sub, stage_host)
+        stage_sub, stage_host, stage_port = self._get_stage_host_and_port(container_name)
+        self.log_bucket.put('stage: sub({}), host({}), port({})'.format(stage_sub, stage_host, stage_port))
 
         # add a nginx conf with proxy pass to the host port and reload nginx
-        self._add_nginx_conf(stage_sub, stage_host, host_port, container_name)
+        self._add_nginx_conf(stage_sub, stage_host, stage_port, container_name)
         self.log_bucket.put('added stage nginx config file')
 
         self._reload_nginx_conf()
@@ -174,7 +179,7 @@ class DockerComposeLocal(ProvisionBackend):
         self.log_bucket.put('# Git cloning repository...', header=True)
 
         repo_url = 'https://{0}@github.com/{1}.git'.format(self.repo_access_key, self.repo)
-        with lcd(settings.STORAGE_HOME):
+        with lcd(settings.STAGE_REPO_HOME):
             cmd = 'git clone -b {0} {1} {2}'.format(self.branch, repo_url, self.stage_unique_token)
             self._exec_local(cmd, errors.GitRepoCloneError)
 
@@ -191,6 +196,19 @@ class DockerComposeLocal(ProvisionBackend):
             cmd = 'git reset --hard {0}'.format(target)
             self._exec_local(cmd, errors.GitRepoPullError)
 
+    def _load_yaml(self, yaml_path):
+        yaml_data = None
+        with open(yaml_path, 'r') as f:
+            try:
+                yaml_data = yaml.load(f)
+                output = 'loaded successfully'
+            except yaml.YAMLError as e:
+                output = e.message
+                raise errors.InvalidStageConfigError()
+            finally:
+                self.log_bucket.put(output)
+        return yaml_data
+
     def load_compose_file(self):
         self.log_bucket.put('# Loading stage34 service config file...', header=True)
 
@@ -200,21 +218,25 @@ class DockerComposeLocal(ProvisionBackend):
         if not os.path.exists(stage34_compose_path):
             self.log_bucket.put('no such stage34 config file: {}'.format(stage34_compose_path))
             raise errors.StageConfigNotFoundError()
-
-        with open(stage34_compose_path, 'r') as f:
-            try:
-                self.stage34_data = yaml.load(f)
-                output = 'loaded successfully'
-            except yaml.YAMLError as e:
-                output = e.message
-                raise errors.InvalidStageConfigError()
-            finally:
-                self.log_bucket.put(output)
+        self.stage34_data = self._load_yaml(stage34_compose_path)
 
         # find stage34.entry app in compose data, if not then error
         if 'stage34' not in self.stage34_data:
             self.log_bucket.put('invalid config data: {}'.format(self.stage34_data))
             raise errors.InvalidStageConfigError()
+
+        # get entry container name if exists
+        if not self.entry_container_name:
+            temp_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_TEMP_FILE)
+            if not os.path.exists(temp_compose_path):
+                self.entry_container_name = self._gen_container_name()
+            else:
+                entry_name = self.stage34_data['stage34']['entry']
+                temp_data = self._load_yaml(temp_compose_path)
+                for svc_name, svc_data in temp_data['services'].iteritems():
+                    if svc_name == entry_name:
+                        self.entry_container_name = svc_data['container_name']
+                        break
 
     def up(self, recreate=False):
         self.log_bucket.put('# Provisioning stage service...', header=True)
@@ -231,34 +253,28 @@ class DockerComposeLocal(ProvisionBackend):
                 args.append('--no-recreate')
             self._exec_docker_compose_cmd('up', *args)
 
-        # get entry container name
-        entry_container_name = self._get_entry_container_name()  
-
         # prepare nginx proxy pass
-        self._prepare_nginx_proxy(entry_container_name)
+        self._prepare_nginx_proxy(self.entry_container_name)
         self.log_bucket.put('nginx proxy is ready')
 
     def down(self):
         self.log_bucket.put('# Down the provisioned stage service...', header=True)
 
-        # delete repo
+        # down docker compose
         repo_home = self._get_repo_dir()
+        with lcd(repo_home):
+            self._exec_docker_compose_cmd('down')
+
+        # delete repo
         if os.path.exists(repo_home):
             shutil.rmtree(repo_home)
             self.log_bucket.put('deleted repository')
         else:
             self.log_bucket.put('skipped deleting repository as not exist')
 
-        # get entry container name
-        entry_container_name = self._get_entry_container_name()
-
         # delete nginx proxy conf and reload
-        self._disable_nginx_proxy(entry_container_name)
+        self._disable_nginx_proxy(self.entry_container_name)
         self.log_bucket.put('nginx proxy is disabled')
-
-        # down docker compose
-        with lcd(repo_home):
-            self._exec_docker_compose_cmd('down')
 
     def start(self):
         self.log_bucket.put('# Start the provisioned stage service...', header=True)
@@ -267,11 +283,8 @@ class DockerComposeLocal(ProvisionBackend):
         with lcd(repo_home): 
             self._exec_docker_compose_cmd('start')
 
-        # get entry container name
-        entry_container_name = self._get_entry_container_name()  
-
         # prepare nginx proxy pass
-        self._prepare_nginx_proxy(entry_container_name)
+        self._prepare_nginx_proxy(self.entry_container_name)
         self.log_bucket.put('nginx proxy is ready')
 
     def stop(self):
@@ -281,9 +294,6 @@ class DockerComposeLocal(ProvisionBackend):
         with lcd(repo_home): 
             self._exec_docker_compose_cmd('stop')
 
-        # get entry container name
-        entry_container_name = self._get_entry_container_name()  
-
         # delete nginx proxy conf and reload
-        self._disable_nginx_proxy(entry_container_name)
+        self._disable_nginx_proxy(self.entry_container_name)
         self.log_bucket.put('nginx proxy is disabled')

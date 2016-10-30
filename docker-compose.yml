@@ -1,0 +1,88 @@
+version: '2'
+
+services:
+  redis:
+    container_name: stage34-redis
+    image: redis
+    networks:
+      - backend
+
+  stage34-volume:
+    container_name: stage34-volume
+    image: ubuntu:trusty
+    command: ["/bin/true"]
+    volumes:
+      - /etc/hosts:/etc/hosts
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/mime.types:/etc/nginx/mime.types
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./webapp/assets:/usr/stage34/assets
+      - ./webapp:/usr/stage34/webapp
+      - ./data/db:/usr/stage34/db
+      - ./data/repo:/usr/stage34/repo
+      - ./frontend/dist:/usr/stage34/frontend
+      - ./frontend/public:/usr/stage34/frontend/public
+
+  webapp:
+    container_name: stage34-webapp
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    volumes_from:
+      - stage34-volume
+    links:
+      - redis:redis
+    environment:
+      - local
+    command:
+      - "manage.py"
+      - "runserver"
+      - "0.0.0.0:8000"
+    restart: unless-stopped
+
+  worker:
+    container_name: stage34-worker
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    volumes_from:
+      - stage34-volume
+    links:
+      - redis:redis
+    environment:
+      - local
+    command:
+      - "celeryworker.py"
+      - "worker"
+      - "-l"
+      - "debug"
+      - "-Q"
+      - "q_default"
+    restart: unless-stopped
+
+  nginx:
+    container_name: stage34-nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    ports:
+      - '8000:80'
+    volumes_from:
+      - stage34-volume
+    links:
+      - webapp:webapp
+    environment:
+      - local
+    restart: unless-stopped
+
+networks:
+  backend:
+    driver: bridge
