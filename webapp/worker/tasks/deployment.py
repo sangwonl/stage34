@@ -1,99 +1,161 @@
 from __future__ import absolute_import
 
 from celery import shared_task
-from django.conf import settings
-from mako.template import Template
-
-from fabric.api import local
-from fabric.context_managers import lcd
-
-from libs.utils.github import GithubAgent
-from libs.utils.data import merge_dicts
 
 from api.models.resources import Stage
 
-import os
-import yaml
-import json
+from libs.backends.provision import DockerComposeLocal
+
+
+def _udpate_stage_status(stage_id, status, is_up=None):
+    if is_up is None:
+        Stage.objects.filter(id=stage_id).update(status=status)
+    else:
+        Stage.objects.filter(id=stage_id).update(status=status, is_up=is_up)
+
+
+def _get_stage_by_id(stage_id):
+    return Stage.objects.filter(id=stage_id).first()
+
+
+def _delete_stage_by_id(stage_id):
+    Stage.objects.filter(id=stage_id).delete()
 
 
 @shared_task(queue='q_default')
-def task_provision_stage(github_access_key, stage_id, repo, branch):
-    github_agent = GithubAgent(github_access_key)
+def task_provision_stage(github_access_key, stage_id, repo, branch, run_on_create):
+    # get proper provision backend
+    provision_backend = DockerComposeLocal(stage_id, repo, branch, github_access_key)
 
-    # clone the repository on the directory
-    with lcd(settings.REPOSITORY_HOME):
-        local('git clone -b {0} https://{1}@github.com/{2}.git {3}'.format(branch, github_access_key, repo, stage_id))
+    try:
+        # clone the repository on the directory
+        provision_backend.clone_repository()
 
-    compose_data = {}
+        # load docker compose file
+        provision_backend.load_compose_file()
 
-    # find docker-compose.stage34.yml, if not then error
-    repo_home = os.path.join(settings.REPOSITORY_HOME, str(stage_id))
-    stage34_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_STAGE34_FILE)
-    if not os.path.exists(stage34_compose_path):
+        # provisioning if run_on_create is set
+        if run_on_create:
+            provision_backend.up()
+
+    except Exception as e:
+        print e
+        _udpate_stage_status(stage_id, 'paused')
         return 'error'
-
-    with open(stage34_compose_path, 'r') as f:
-        try:
-            stage34_compose_data = yaml.load(f)
-            compose_data = stage34_compose_data
-        except yaml.YAMLError as e:
-            return e
-
-    # find docker-compose.yml and merge with stage34 compose data, if not then skip
-    default_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_DEFAULT_FILE)
-    if os.path.exists(default_compose_path):
-        with open(default_compose_path, 'r') as f:
-            try:
-                def_compose_data = yaml.load(f)
-                compose_data = merge_dicts(def_compose_data, stage34_compose_data)
-            except yaml.YAMLError as e:
-                return e
-
-    # find stage34.entry app in compose data, if not then error
-    if 'stage34' not in compose_data or 'entry' not in compose_data['stage34']:
-        return 'error'
-
-    entry_name = compose_data['stage34']['entry']
-    del compose_data['stage34']
-
-    # write docker-compose.temp.yml without stage34 item
-    temp_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_TEMP_FILE)
-    with open(temp_compose_path, 'w') as f:
-        yaml.dump(compose_data, f, default_flow_style=False)
-
-    # run docker compose with docker-compose.temp.yml
-    with lcd(repo_home):
-        local('{0} -f {1} up -d'.format(settings.DOCKER_COMPOSE_BIN_PATH, settings.DOCKER_COMPOSE_TEMP_FILE))
-
-    # inpect host port of the entry container (full name is combined dir + app name + numbering)
-    entry_container_name = '{0}_{1}_1'.format(stage_id, entry_name)
-    out = local('{0} inspect {1}'.format(settings.DOCKER_BIN_PATH, entry_container_name), capture=True)
-    container_info = json.loads(out)
-    host_port = container_info[0]['NetworkSettings']['Ports'].values()[0][0]['HostPort']
-
-    # add stage host into /etc/hosts
-    local("sudo {0} '127.0.0.1    {1}.{2}'".format(settings.ETC_HOSTS_UPDATER_PATH, stage_id, settings.STAGE34_HOST))
-
-    # add a nginx conf with proxy pass to the host port
-    nginx_templ_path = os.path.join(settings.WEBAPP_DIR, 'worker', 'tasks', 'templates', 'stage_nginx.conf')
-    with open(nginx_templ_path, 'r') as f:
-        nginx_templ = f.read()
-
-    stage_nginx_conf = Template(nginx_templ).render(
-        stage_id=stage_id,
-        stage34_host=settings.STAGE34_HOST,
-        docker_host_port=host_port
-    )
-
-    nginx_conf_path = os.path.join(settings.NGINX_CONF_PATH, '{}.conf'.format(entry_container_name))
-    with open(nginx_conf_path, 'w') as f:
-        f.write(stage_nginx_conf)
-
-    # reload nginx
-    with lcd(settings.PROJECT_DIR):
-        local('{0} -p nginx -c nginx.conf -s reload'.format(settings.NGINX_BIN_PATH))
+    
+    finally:
+        provision_backend.flush_log()
 
     # update stage status and connect info
-    endpoint = 'http://{0}.{1}:{2}'.format(stage_id, settings.STAGE34_HOST, settings.STAGE34_PORT)
-    Stage.objects.update(status='running', endpoint=endpoint)
+    is_up = False
+    status = 'paused'
+    if run_on_create:
+        status = 'running'
+        is_up = True
+    _udpate_stage_status(stage_id, status, is_up)
+    return 'ok'
+
+
+@shared_task(queue='q_default')
+def task_change_stage_status(github_access_key, stage_id, new_status):
+    if new_status not in ('running', 'paused'):
+        return 'error'
+
+    stage = _get_stage_by_id(stage_id)
+    if not stage:
+        return 'error'
+
+    # get proper provision backend
+    provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
+
+    is_up = None
+    try:
+        # load docker compose file
+        provision_backend.load_compose_file()
+
+        # start or stop containers accoding to `action`
+        result = False
+        if new_status == 'running':
+            if stage.is_up:
+                provision_backend.start()
+            else:
+                provision_backend.up()
+                is_up = True
+        elif new_status == 'paused':
+            provision_backend.stop()
+
+    except Exception as e:
+        print e
+        _udpate_stage_status(stage_id, 'paused')
+        return 'error'
+
+    finally:
+        provision_backend.flush_log()
+
+    # update stage status
+    _udpate_stage_status(stage_id, new_status, is_up=is_up)
+    return 'ok'
+ 
+
+@shared_task(queue='q_default')
+def task_delete_stage(github_access_key, stage_id):
+    stage = _get_stage_by_id(stage_id)
+    if not stage:
+        return 'error'
+
+    if stage.status not in ('paused'):
+        return 'error'
+
+    # get proper provision backend
+    provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
+
+    try:
+        # load docker compose file
+        provision_backend.load_compose_file()
+
+        # tear down stage
+        provision_backend.down()
+
+    except Exception as e:
+        print e
+
+    finally:
+        provision_backend.flush_log()
+
+    # delete stage
+    _delete_stage_by_id(stage_id)
+    return 'ok'
+
+
+@shared_task(queue='q_default')
+def task_refresh_stage(github_access_key, stage_id):
+    stage = _get_stage_by_id(stage_id)
+    if not stage:
+        return 'error'
+
+    # get proper provision backend
+    provision_backend = DockerComposeLocal(stage_id, stage.repo, stage.branch, github_access_key)
+
+    is_up = None
+    try:
+        # load docker compose file
+        provision_backend.load_compose_file()
+
+        # stop, refresh and start
+        provision_backend.stop()
+        provision_backend.pull_repository()
+        provision_backend.start()
+
+        new_status = 'running'
+
+    except Exception as e:
+        print e
+        _udpate_stage_status(stage_id, 'paused')
+        return 'error'
+
+    finally:
+        provision_backend.flush_log()
+
+    # update stage status
+    _udpate_stage_status(stage_id, new_status)
+    return 'ok'

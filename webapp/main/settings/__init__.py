@@ -57,8 +57,8 @@ INSTALLED_APPS += [
 
 AUTH_USER_MODEL = 'api.User'
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'api.helpers.backends.JWTAuthenticationBackend'
+    'api.helpers.backends.JWTAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -66,8 +66,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'api.helpers.middlewares.JWTAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -118,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -155,28 +155,28 @@ GITHUB_API = {
 
 
 # Stage Repository
-REPOSITORY_HOME = os.path.join(WEBAPP_DIR, 'storage')
+STAGE_REPO_HOME = '/usr/stage34/repo'
 
 
 # Docker
-DOCKER_COMPOSE_STAGE34_FILE = 'docker-compose.stage34.yml'
-DOCKER_COMPOSE_DEFAULT_FILE = 'docker-compose.yml'
-DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.temp.yml'
-DOCKER_COMPOSE_BIN_PATH = '/usr/local/bin/docker-compose'
-DOCKER_BIN_PATH = '/usr/local/bin/docker'
-
-
-# Host Updater
-ETC_HOSTS_UPDATER_PATH = os.path.join(PROJECT_DIR, 'etc', 'scripts', 'host_updater.sh')
+DOCKER_COMPOSE_STAGE34_FILE = 'stage34-services.yml'
+DOCKER_COMPOSE_TEMP_FILE = 'docker-compose.stage34.yml'
+DOCKER_COMPOSE_BIN_PATH = '/usr/bin/docker-compose'
+DOCKER_BIN_PATH = '/usr/bin/docker'
+DOCKER_NETWORK_BRIDGE = 'stage34_backend'
 
 
 # Nginx
-NGINX_CONF_PATH = os.path.join(PROJECT_DIR, 'nginx', 'conf.d')
-NGINX_BIN_PATH = '/usr/local/bin/nginx'
+NGINX_CONTAINER_NAME = 'stage34-nginx'
+NGINX_CONF_PREFIX = 'nginx'
+NGINX_CONF_PATH = '/etc/nginx/conf.d'
+NGINX_BIN_PATH = '/usr/sbin/nginx'
+NGINX_STAGE_TEMPL_DIR = os.path.join(WEBAPP_DIR, 'libs', 'backends', 'templates')
+NGINX_STAGE_TEMPL = 'stage_nginx.conf'
 
 
 # Celery Configurations
-REDIS_URL = 'redis://0.0.0.0:6379/0'
+REDIS_URL = 'redis://redis:6379/0'
 BROKER_URL = [REDIS_URL]
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_IGNORE_RESULT = False
@@ -189,7 +189,7 @@ CELERY_ACKS_LATE = False
 CELERYD_PREFETCH_MULTIPLIER = 4
 CELERYD_MAX_TASKS_PER_CHILD = 10        # pre-forked task pool
 CELERYD_CONCURRENCY = 4                 # # of worker processes
-CELERY_TIMEZONE = 'Asia/Seoul'
+CELERY_TIMEZONE = TIME_ZONE
 CELERY_ALWAYS_EAGER = False
 # TCELERY_RESULT_NOWAIT = False         # tornado celery nowait option
 CELERYBEAT_SCHEDULE = {
@@ -199,13 +199,3 @@ CELERYBEAT_SCHEDULE = {
         'args': ('world',),
     },
 }
-
-
-try:
-    from importlib import import_module
-    env = os.environ.get('ENV', 'local')
-    custom_conf = import_module('.' + env, __name__)
-    for key in filter(lambda x: not x.startswith('__'), dir(custom_conf)):
-        globals()[key] = getattr(custom_conf, key)
-except (ImportError, AttributeError):
-    pass

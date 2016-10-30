@@ -2,12 +2,12 @@ from django.http import JsonResponse
 
 
 class JSENDSuccess(JsonResponse):
-    def __init__(self, status_code, data):
+    def __init__(self, status_code, data={}):
         super(JSENDSuccess, self).__init__(status=status_code, data={'status': 'success', 'data': data})
 
 
 class JSENDFail(JsonResponse):
-    def __init__(self, status_code, data):
+    def __init__(self, status_code, data={}):
         super(JSENDFail, self).__init__(status=status_code, data={'status': 'fail', 'data': data})
 
 

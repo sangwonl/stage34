@@ -34,14 +34,15 @@ class Membership(models.Model):
 class Stage(models.Model):
     STATUS_CHOICES = (
         ('creating', 'Creating'),
+        ('changing', 'Changing'),
         ('running', 'Running'),
         ('paused', 'Paused'),
     )
 
     org = models.ForeignKey(Organization, on_delete=models.CASCADE)
     title = models.CharField(max_length=128, default='')
-    endpoint = models.CharField(max_length=256, default='')
-    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='running')
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='creating')
+    is_up = models.BooleanField(default=False)
     repo = models.CharField(max_length=256, default='')
     default_branch = models.CharField(max_length=256, default='')
     branch = models.CharField(max_length=256, default='')
@@ -50,3 +51,10 @@ class Stage(models.Model):
 
     class Meta:
         db_table = 'stages'
+
+    @property
+    def endpoint(self):
+        if self.status == 'running':
+            port = ':{0}'.format(settings.STAGE34_PORT) if settings.STAGE34_PORT != '80' else ''
+            return 'http://{0}.{1}{2}'.format(self.id, settings.STAGE34_HOST, port)
+        return ''

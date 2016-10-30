@@ -21,8 +21,9 @@ import 'rxjs/add/operator/switchMap';
 
 // Other vendors for example jQuery, Lodash or Bootstrap
 // You can import js, ts, css, sass, ...
+require('font-awesome-webpack');
+
 import 'jquery';
 import 'bootstrap-loader';
 import 'normalize.css/normalize.css';
-import 'font-awesome/css/font-awesome.css';
 import 'bootstrap-social/bootstrap-social.css';

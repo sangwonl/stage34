@@ -1,8 +1,8 @@
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var helpers = require('./helpers');
 var autoprefixer = require('autoprefixer');
+var helpers = require('./helpers');
 
 module.exports = {
     entry: {
@@ -29,7 +29,7 @@ module.exports = {
             test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?/,
             loader: 'url?limit=10000&mimetype=application/font-woff'
         }, {
-            test: /\.ttf(\?v=\d+\.\d+\.\d+)?/,
+            test: /\.(ttf|otf)(\?v=\d+\.\d+\.\d+)?/,
             loader: 'url?limit=10000&mimetype=application/octet-stream'
         }, {
             test: /\.eot(\?v=\d+\.\d+\.\d+)?/,
@@ -70,6 +70,15 @@ module.exports = {
             jQuery: 'jquery',
             jquery: 'jquery',
             $: 'jquery'
+        }),
+
+        new webpack.DefinePlugin({
+            'process.env': {
+                'CONF': JSON.stringify((function() {
+                    var exists = helpers.fileExists('./config.json');
+                    return exists ? require('../config.json') : {};
+                })())
+            }
         })
     ]
 };

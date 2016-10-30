@@ -1,0 +1,33 @@
+<div *ngIf="!forNew" class="stage-card">
+    <div class="stage-header">
+        <p class="stage-title">#{{ stage.id }} - {{ stage.title }}</p>
+        <span *ngIf="canTrash()" class="pull-right" (click)="onTrashClicked()">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+        </span>
+        <span *ngIf="canRefresh()" class="pull-right" (click)="onRefreshClicked()">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+        </span>
+    </div>
+    <div class="stage-body">
+        <p class="stage-repo">{{ stage.repo }}</p>
+        <p class="stage-branch">{{ stage.branch }}</p>
+        <a [attr.href]="stage.compare_url">
+            <p class="stage-commits">{{ stage.commits.length }} commits</p>
+        </a>
+        <p class="stage-created-at">{{ stage.created_at | amTimeAgo }}</p>
+    </div>
+    <div class="stage-footer">
+        <span class="stage-info" (click)="onInfoClicked()">
+            <i class="fa fa-plug" aria-hidden="true"></i>
+        </span>
+        <span class="stage-status" (click)="onStatusClicked()">
+            <i class="fa" [ngClass]="statusIconClass()" aria-hidden="true"></i>
+        </span>
+    </div>    
+</div>
+
+<div *ngIf="forNew" class="stage-card" (click)="onNewClicked()">
+    <div class="stage-new">
+        <span><i class="fa fa-plus fa-3x" aria-hiden="true"></i></span>
+    </div>
+</div>

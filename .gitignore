@@ -1,3 +1,12 @@
+# VSCode
+.vscode
+
+# Typescript
+typings
+
+# Vagrant
+.vagrant
+
 # Mac
 .DS_Store
 

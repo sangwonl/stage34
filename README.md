@@ -1,69 +1,114 @@
 ## Stage34
 Freescale Staging Environment
-** Local Dev Environment Only (for now) **
 
+![alt tag](http://g.recordit.co/0J84vWlwC5.gif)
+
+## Docker Container Structure
+
+                    +-------+       +--------+  +-------+  +--------+
+          +---------+ Nginx +-------+ Webapp +--+ Redis +--+ Worker +---+
+          |         +--+----+       +----+---+  +-------+  +--+-----+   |
+          |            |  +----------+  |                     |         |
+          |            |  | Frontend |  |                     | /var/run/docker.sock
+          |            |  +----+-----+  |                     |         |
+          |            |       |        |                     |         |
+          |         +--+-------+--------+---------------------+-----+   |
+    +-----+-----+   |    /etc/nginx/                                |   |
+    |   Stage   |   |    /usr/stage34/db/                           |   |
+    | Container |   |    /usr/stage34/assets/                       |   |
+    +-----------+   |    /usr/stage34/frontend/                     |   |
+                    |    /usr/stage34/repo/                         |   |
+                    +-----------------------------------------------+   |
+                    |                 Volume Container              |   |
+                    +-----------------------------------------------+   |
+                                                                        |
+                    +-----------------------------------------------+   |
+                    |                    Docker Host                +---+
+                    +-----------------------------------------------+
 
 ## Required
-### For Webapp (with Celery)
-- Python 2.7
-- Redis Server (Broker & Result Backend)
 - Docker & Docker Compose
-
-### Frontend
+- Python 2.7
 - npm 3.x.x
 - node 4.x.x
 
 
-#### Prerequisite
-If you are in local environment,
-
-- need to add STAGE34_HOST(defined in `main.settings` and it is `stage34.io` by default) into `/etc/hosts`
-- need to make your group to skip password for sudo specific command so that stage34 app can access and modify `/etc/hosts`. Open sudoer configuration by `sudo visudo` and add followings.
-```
-Cmnd_Alias  STAGE34_HOST_UPDATER = <stage34-project-home>/etc/scripts/host_updater.sh
-%staff  ALL=(ALL) NOPASSWD: STAGE34_HOST_UPDATER
-```
+## Prerequisite
+#### GitHub Application
 - need to add a new github 3rd-party application and update `settings.GITHUB_API` with client id and secret.
 
-#### Step1 - Python Packages
+#### Local DNS Resolving
+if local test environment, it's recommended to use `Dnsmasq` to resolve local subdomain.
+
+- Mac OS X
+```
+# Install it
+$ brew install dnsmasq
+
+# Create the etc dir if needed
+$ mkdir -p /usr/local/etc
+
+# Create a simple configuration
+$ echo "address=/.stage34.io/0.0.0.0" > /usr/local/etc/dnsmasq.conf
+
+# Install the daemon startup file
+$ sudo cp -fv /usr/local/opt/dnsmasq/*.plist /Library/LaunchDaemons
+
+# Start the daemon
+$ sudo launchctl load /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
+
+$ sudo mkdir -p /etc/resolver
+$ sudo sh -c 'echo "nameserver 0.0.0.0" > /etc/resolver/stage34.io'
+
+$ ping sub.stage34.io
+```
+
+- Ubuntu
+```
+$ sudo nano /etc/NetworkManager/NetworkManager.conf
+- search for "dns=dnsmasq"
+- replace with "#dns=dnsmasq"
+
+$ sudo apt-get install dnsmasq
+$ sudo nano /etc/dnsmasq.conf
+- append line: "listen-address=0.0.0.0"
+- append line: "bind-interfaces"
+- append line: "address=/.stage34.io/0.0.0.0"
+
+$ sudo netstat -plant | grep :53
+- look for "NUMBER/dnsmasq"
+$ sudo kill -9 NUMBER
+- fill in the number you found for "NUMBER"
+
+$ sudo service dnsmasq restart
+$ sudo nano /etc/dhcp/dhclient.conf
+- append line: "prepend domain-name-servers 0.0.0.0;"
+
+$ sudo service network-manager restart
+```
+
+- References
+
+http://asciithoughts.com/posts/2014/02/23/setting-up-a-wildcard-dns-domain-on-mac-os-x/
+https://www.leaseweb.com/labs/2013/08/wildcard-dns-ubuntu-hosts-file-using-dnsmasq/
+
+
+## Build
+#### Frontend
+```
+$ cd frontend
+$ npm install
+$ npm run build
+```
+
+#### Django Migrate
 ```
 $ cd webapp
-$ pip install requirements/dev.txt
+$ pip install -r requirements/prod.txt
+$ python manage.py migrate
 ```
 
-#### Step2 - Migration
+## Run
 ```
-$ ENV=local python manage.py migrate
+$ docker-compose up
 ```
-
-#### Step3 - Run Server
-```
-$ ENV=local python manage.py runserver 0.0.0.0:8080
-```
-
-#### Step4 - Run Celery Worker
-```
-$ ENV=local celery -A main worker -B --loglevel=info -Q q_default
-```
-or
-```
-$ ENV=local python main/celeryworker.py worker -B --loglevel=info -Q q_default
-```
-
-
-#### Step5 - Node Modules
-```
-$ npm install
-```
-
-#### Step6 - Serve App with Watch
-```
-$ npm start
-```
-
-#### Step7 - Nginx
-```
-$ nginx -p nginx -c nginx.conf
-```
-
-#### Step8 - Open 'http://stage34.io:8000'

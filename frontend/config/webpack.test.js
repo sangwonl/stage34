@@ -14,7 +14,7 @@ module.exports = {
             loader: 'html'
 
         }, {
-            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|otf|eot|ico)$/,
             loader: 'null'
         }, {
             test: /\.css$/,
