@@ -87,7 +87,8 @@ $ sudo nano /etc/dhcp/dhclient.conf
 $ sudo service network-manager restart
 ```
 
-References)
+- References
+
 http://asciithoughts.com/posts/2014/02/23/setting-up-a-wildcard-dns-domain-on-mac-os-x/
 https://www.leaseweb.com/labs/2013/08/wildcard-dns-ubuntu-hosts-file-using-dnsmasq/
 
