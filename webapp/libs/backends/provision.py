@@ -76,10 +76,9 @@ class DockerComposeLocal(ProvisionBackend):
         compose_data.update({'networks': {network_name: {'external': {'name': network_name}}}})
         for svc_name, svc_data in compose_data['services'].iteritems():
             is_entry = svc_name == entry_name
-            container_name = self.entry_container_name if is_entry else self._gen_container_name()
             svc_data.update({
-                'image': container_name,
-                'container_name': container_name,
+                'image': self.entry_container_name if is_entry else svc_name,
+                'container_name': self.entry_container_name if is_entry else svc_name,
                 'restart': 'unless-stopped',
                 'networks': [network_name]
             })
