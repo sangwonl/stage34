@@ -93,12 +93,22 @@ http://asciithoughts.com/posts/2014/02/23/setting-up-a-wildcard-dns-domain-on-ma
 https://www.leaseweb.com/labs/2013/08/wildcard-dns-ubuntu-hosts-file-using-dnsmasq/
 
 
-## Build
+## Configuration & Build
 #### Frontend
 ```
 $ cd frontend
+$ cp config.json.sample config.json
+- modify API_HOST to yours
+
 $ npm install
 $ npm run build
+```
+
+#### Django Settings
+```
+$ cd webapp
+$ vi main/settings/__init__.py
+- modify STAGE34_HOST, STAGE34_PORT, GITHUB_API.client_id, GITHUB_API.client_secret, GITHUB_API.redirect_uri to yours
 ```
 
 #### Django Migrate
@@ -108,7 +118,15 @@ $ pip install -r requirements/prod.txt
 $ python manage.py migrate
 ```
 
+#### Nginx Server Name
+```
+$ cd nginx
+$ vi nginx/nginx.conf
+- modify servername (stage34.io by default) to yours
+```
+
 ## Run
 ```
 $ docker-compose up
+- if you want to run entry port to 80, modify nginx publishing port in docker-compose.yml
 ```
