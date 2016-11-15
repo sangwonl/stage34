@@ -15,6 +15,7 @@ import json
 import shutil
 import copy
 import uuid
+import hashlib
 
 
 class ProvisionBackend(object):
@@ -26,9 +27,6 @@ class ProvisionBackend(object):
         self.repo_access_key = repo_access_key
         self.stage34_data = {}
         self.log_bucket = LogBucket(self.stage_unique_token)
-
-    def _gen_container_name(self):
-        return 'stage34-{}'.format(uuid.uuid4().hex[:7])
 
     def clone_repository(self):
         raise NotImplemented
@@ -65,32 +63,58 @@ class DockerComposeLocal(ProvisionBackend):
     def _get_repo_dir(self):
         return os.path.join(settings.STAGE_REPO_HOME, self.stage_unique_token)
 
-    def _prepare_provision_conf(self):
-        # prepare compose data excluding stage34
-        compose_data = copy.deepcopy(self.stage34_data)
-        assert 'stage34' in compose_data
+    def _get_repo_based_path(self, filepath):
+        repo_home = self._get_repo_dir()
+        return os.path.join(repo_home, filepath)
 
-        # add stage34 network information and naming containers
-        entry_name = self.stage34_data['stage34']['entry']
+    def _hash_container_name(self, container_name):
+        m = hashlib.md5()
+        m.update(self.stage_unique_token + self.repo + self.branch + container_name)
+        return 'stage34-{}'.format(m.hexdigest()[:10])
+
+    def _makeup_container_names(self, service_data):
+        names = {}
+        for svc_name, svc_data in service_data['services'].iteritems():
+            names.update({svc_name: self._hash_container_name(svc_name)})
+        return names
+
+    def _mangle_container_names(self, service_data):
         network_name = settings.DOCKER_NETWORK_BRIDGE
-        compose_data.update({'networks': {network_name: {'external': {'name': network_name}}}})
-        for svc_name, svc_data in compose_data['services'].iteritems():
-            is_entry = svc_name == entry_name
+        entry_name = service_data['stage34']['entry']
+        del service_data['stage34']
+
+        # container name table
+        container_name_table = self._makeup_container_names(service_data)
+        for svc_name, svc_data in service_data['services'].iteritems():
+            mangled_name = container_name_table.get(svc_name)
             svc_data.update({
-                'image': self.entry_container_name if is_entry else svc_name,
-                'container_name': self.entry_container_name if is_entry else svc_name,
-                'restart': 'unless-stopped',
-                'networks': [network_name]
+                'container_name': mangled_name,
+                'networks': [network_name],
+                'restart': 'unless-stopped'
             })
 
-        assert self.entry_container_name
-        del compose_data['stage34']
+            if entry_name == svc_name:
+                svc_data.update({'image': mangled_name})
+
+    def _add_network_tier(self, service_data):
+        network_name = settings.DOCKER_NETWORK_BRIDGE
+        service_data.update({'networks': {
+            network_name: {'external': {'name': network_name}}}})
+
+    def _prepare_provision_conf(self):
+        # prepare compose data excluding stage34
+        service_data = copy.deepcopy(self.stage34_data)
+
+        # container name mangling
+        self._mangle_container_names(service_data)
+
+        # add network tier
+        self._add_network_tier(service_data)
 
         # docker-compose.temp.yml without stage34 item
-        repo_home = self._get_repo_dir()
-        temp_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_TEMP_FILE)
+        temp_compose_path = self._get_repo_based_path(settings.DOCKER_COMPOSE_TEMP_FILE)
         with open(temp_compose_path, 'w') as f:
-            yaml.dump(compose_data, f, default_flow_style=False)
+            yaml.dump(service_data, f, default_flow_style=False)
 
     def _exec_local(self, cmd, except_cls):
         try:
@@ -176,6 +200,27 @@ class DockerComposeLocal(ProvisionBackend):
         self._reload_nginx_conf()
         self.log_bucket.put('nginx service reloaded')
 
+    def _load_yaml(self, yaml_path):
+        yaml_data = None
+        with open(yaml_path, 'r') as f:
+            try:
+                yaml_data = yaml.load(f)
+                output = 'loaded successfully'
+            except yaml.YAMLError as e:
+                output = e.message
+                raise errors.InvalidStageConfigError()
+            finally:
+                self.log_bucket.put(output)
+        return yaml_data
+
+    def _load_stage34_svc_file(self):
+        # find stage34-services.yml, if not then error
+        stage34_compose_path = self._get_repo_based_path(settings.DOCKER_COMPOSE_STAGE34_FILE)
+        if not os.path.exists(stage34_compose_path):
+            self.log_bucket.put('no such stage34 config file: {}'.format(stage34_compose_path))
+            raise errors.StageConfigNotFoundError()
+        return self._load_yaml(stage34_compose_path)
+
     def clone_repository(self):
         self.log_bucket.put('# Git cloning repository...', header=True)
 
@@ -197,47 +242,20 @@ class DockerComposeLocal(ProvisionBackend):
             cmd = 'git reset --hard {0}'.format(target)
             self._exec_local(cmd, errors.GitRepoPullError)
 
-    def _load_yaml(self, yaml_path):
-        yaml_data = None
-        with open(yaml_path, 'r') as f:
-            try:
-                yaml_data = yaml.load(f)
-                output = 'loaded successfully'
-            except yaml.YAMLError as e:
-                output = e.message
-                raise errors.InvalidStageConfigError()
-            finally:
-                self.log_bucket.put(output)
-        return yaml_data
-
     def load_compose_file(self):
         self.log_bucket.put('# Loading stage34 service config file...', header=True)
 
-        # find stage34-services.yml, if not then error
-        repo_home = self._get_repo_dir()
-        stage34_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_STAGE34_FILE)
-        if not os.path.exists(stage34_compose_path):
-            self.log_bucket.put('no such stage34 config file: {}'.format(stage34_compose_path))
-            raise errors.StageConfigNotFoundError()
-        self.stage34_data = self._load_yaml(stage34_compose_path)
+        # load stage34 service file
+        self.stage34_data = self._load_stage34_svc_file()
 
         # find stage34.entry app in compose data, if not then error
         if 'stage34' not in self.stage34_data:
             self.log_bucket.put('invalid config data: {}'.format(self.stage34_data))
             raise errors.InvalidStageConfigError()
 
-        # get entry container name if exists
-        if not self.entry_container_name:
-            temp_compose_path = os.path.join(repo_home, settings.DOCKER_COMPOSE_TEMP_FILE)
-            if not os.path.exists(temp_compose_path):
-                self.entry_container_name = self._gen_container_name()
-            else:
-                entry_name = self.stage34_data['stage34']['entry']
-                temp_data = self._load_yaml(temp_compose_path)
-                for svc_name, svc_data in temp_data['services'].iteritems():
-                    if svc_name == entry_name:
-                        self.entry_container_name = svc_data['container_name']
-                        break
+        # entry hashed container name
+        entry_name = self.stage34_data['stage34']['entry']
+        self.entry_container_name = self._hash_container_name(entry_name)
 
     def up(self, recreate=False):
         self.log_bucket.put('# Provisioning stage service...', header=True)
