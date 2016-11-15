@@ -8,7 +8,7 @@ import { Stage } from '../../models/stage';
 @Component({
     selector: 'stage-info',
     templateUrl: 'stage-info.component.html',
-    styleUrls: ['stage-info.component.css']
+    styleUrls: ['stage-info.component.scss']
 })
 export class StageInfoComponent implements AfterViewInit {
     @ViewChild('infoModal') infoModal: ModalDirective;

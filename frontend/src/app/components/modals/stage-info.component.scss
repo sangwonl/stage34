@@ -3,12 +3,16 @@
     padding-bottom: 4px;
 }
 
-.stage-repo,
-.stage-branch {
+.stage-text {
     font-size: 14px;
     line-height: 0.8em;
     text-align: left;
     display: inline-block;
+}
+
+.stage-repo,
+.stage-branch {
+    @extend .stage-text;
 }
 
 .log-box {

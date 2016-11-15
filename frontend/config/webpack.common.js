@@ -47,8 +47,10 @@ module.exports = {
             loader: 'raw'
         }, {
             test: /\.scss/,
-            loaders: ['style', 'css', 'postcss', 'sass']
-        }, {
+            exclude: /node_modules/,
+            loaders: ['raw-loader', 'sass-loader']
+        },
+        {
             test: /bootstrap\/dist\/js\/\.js/,
             loader: 'imports?jQuery=jquery'
         }]

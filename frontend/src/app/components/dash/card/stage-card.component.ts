@@ -5,7 +5,7 @@ import { Stage } from '../../../models/stage';
 @Component({
     selector: 'stage-card',
     templateUrl: 'stage-card.component.html',
-    styleUrls: ['stage-card.component.css']
+    styleUrls: ['stage-card.component.scss']
 })
 export class StageCardComponent implements OnInit {
     @Input() stage: Stage;
