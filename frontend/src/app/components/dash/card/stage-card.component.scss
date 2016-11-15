@@ -33,19 +33,20 @@
     text-overflow: ellipsis;
 }
 
-.stage-repo,
-.stage-branch {
+.stage-text {
     font-size: 12px;
     font-weight: 200;
     line-height: 0.8em;
     text-align: left;
 }
 
+.stage-repo,
+.stage-branch {
+    @extend .stage-text;
+}
+
 .stage-commits {
-    font-size: 12px;
-    font-weight: 200;
-    line-height: 0.8em;
-    text-align: left;
+    @extend .stage-text;
     text-decoration: underline;
 }
 
