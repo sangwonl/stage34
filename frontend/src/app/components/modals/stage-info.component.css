@@ -1,3 +1,16 @@
+.info-section {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.stage-repo,
+.stage-branch {
+    font-size: 14px;
+    line-height: 0.8em;
+    text-align: left;
+    display: inline-block;
+}
+
 .log-box {
     font-family: "Monaco";
     padding: 10px;
