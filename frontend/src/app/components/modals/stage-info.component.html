@@ -7,18 +7,31 @@
                 </button>
                 <h4 class="modal-title">Stage Details</h4>
             </div>
-            <div class="modal-body">
-                <h4>Endpoint</h4>
-                <span *ngIf="stage">
+            <div class="modal-body" *ngIf="stage">
+                <div class="info-section">
+                    <h4>#{{ stage.id }} - {{ stage.title }}</h4>
+                    <div>
+                        <i class="fa fa-github" aria-hidden="true"></i>
+                        <p class="stage-repo">{{ stage.repo }}</p> 
+                    </div>
+                    <div>
+                        <i class="fa fa-code-fork" aria-hidden="true"></i>
+                        <p class="stage-branch">{{ stage.branch }}</p> 
+                    </div>
+                </div>
+                <div class="info-section">
+                    <h4>Endpoint</h4>
                     <p *ngIf="!stage.endpoint" class="endpoint">not provisioned yet</p>
                     <a *ngIf="stage.endpoint" class="endpoint" target="_blank"
                         [attr.href]="stage.endpoint">{{ stage.endpoint }}</a>
-                </span>
-                <h4>Log</h4>
-                <div class="log-box">
-                    <span *ngFor="let line of logData?.log_messages">
-                        {{ line }}<br>
-                    </span>
+                </div>
+                <div class="info-section">
+                    <h4>Log</h4>
+                    <div class="log-box">
+                        <span *ngFor="let line of logData?.log_messages">
+                            {{ line }}<br>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
