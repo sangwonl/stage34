@@ -1,47 +1,46 @@
 <div bsModal #newModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" (click)="hideModal()" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Add New Stage</h4>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="title">Title</label>
-                        <input type="text" placeholder="Give a name" class="form-control"
-                            id="title" name="title" [(ngModel)]="title">
-                    </div>
-                    <div class="form-group">
-                        <label for="repo-selector">Repository</label>
-                        <select id="repo-selector" class="form-control" name="repo"
-                            [ngModel]="repo" (ngModelChange)="onChangeRepo($event)">
-                            <option value="null">Choose the repository</option>
-                            <option *ngFor="let repo of repos" [ngValue]="repo">{{ repo.full_name }}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="branch-selector">Branch</label>
-                        <select id="branch-selector" class="form-control" name="branch"
-                            [ngModel]="branch" (ngModelChange)="onChangeBranch($event)">
-                            <option value="null">Choose the branch</option>
-                            <option *ngFor="let branch of branches" [ngValue]="branch">{{ branch.name }}</option>
-                        </select>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="run-on-close"
-                                [(ngModel)]="runOnClose">Run on close
-                        </label>
-                    </div>
-                    <div class="form-group form-btn-group">
-                        <button type="submit" class="btn btn-primary" (click)="onSubmit()">Create</button>
-                        <button class="btn btn-default" (click)="hideModal()">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" (click)="hideModal()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Add New Stage</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" placeholder="Give a name" class="form-control"
+                    id="title" name="title" [(ngModel)]="title">
+          </div>
+          <div class="form-group">
+            <label for="repo-selector">Repository</label>
+            <select id="repo-selector" class="form-control" name="repo"
+              [ngModel]="repo" (ngModelChange)="onChangeRepo($event)">
+              <option value="null">Choose the repository</option>
+              <option *ngFor="let repo of repos" [ngValue]="repo">{{ repo.full_name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="branch-selector">Branch</label>
+            <select id="branch-selector" class="form-control" name="branch"
+              [ngModel]="branch" (ngModelChange)="onChangeBranch($event)">
+              <option value="null">Choose the branch</option>
+              <option *ngFor="let branch of branches" [ngValue]="branch">{{ branch.name }}</option>
+            </select>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="run-on-close" [(ngModel)]="runOnClose">Run on close
+            </label>
+          </div>
+          <div class="form-group form-btn-group">
+            <button type="submit" class="btn btn-primary" (click)="onSubmit()">Create</button>
+            <button class="btn btn-default" (click)="hideModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>

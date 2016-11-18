@@ -9,7 +9,7 @@ import { LoginComponent } from './components/auth/login.component';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-  private viewContainerRef:ViewContainerRef;
+  private viewContainerRef: ViewContainerRef;
 
   public constructor(viewContainerRef: ViewContainerRef) {
     this.viewContainerRef = viewContainerRef;
