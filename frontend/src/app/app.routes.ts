@@ -6,9 +6,9 @@ import { LoginComponent } from './components/auth/login.component';
 import { DashComponent } from './components/dash/dash.component';
 
 const appRoutes: Routes = [
-    { path: '', redirectTo: '/dash', pathMatch: 'full'},
-    { path: 'dash', component: DashComponent, canActivate: [AuthGuard] },
-    { path: 'login', component: LoginComponent, canActivate: [AnonymousGuard] }
+  { path: '', redirectTo: '/dash', pathMatch: 'full'},
+  { path: 'dash', component: DashComponent, canActivate: [AuthGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [AnonymousGuard] }
 ];
 
-export const appRouting: ModuleWithProviders = RouterModule.forRoot(appRoutes);
+export const AppRouteModule: ModuleWithProviders = RouterModule.forRoot(appRoutes);

@@ -6,7 +6,9 @@ import { Http, Headers, URLSearchParams } from '@angular/http';
 import { Stage } from '../models/stage';
 import { Repo, Branch, Compare } from '../models/repo';
 
-import { GITHUB_API_BASE } from '../consts';
+import { environment } from '../../environments/environment';
+
+const GITHUB_API_BASE = environment.github_api_base;
 
 @Injectable()
 export class GithubService {

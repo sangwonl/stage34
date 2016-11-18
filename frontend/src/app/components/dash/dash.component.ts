@@ -14,7 +14,7 @@ import { Compare } from '../../models/repo';
 @Component({
     selector: 'dashboard',
     templateUrl: 'dash.component.html',
-    styleUrls: ['dash.component.css']
+    styleUrls: ['dash.component.scss']
 })
 export class DashComponent implements OnInit {
     @ViewChild('stageInfoModal') stageInfoModal: StageInfoComponent;

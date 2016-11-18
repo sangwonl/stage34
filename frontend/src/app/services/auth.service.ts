@@ -3,12 +3,10 @@ import { Observable } from 'rxjs/Observable';
 
 import { Http, Headers } from '@angular/http';
 
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/delay';
-
 import { User } from '../models/user';
-import { STAGE34_HOST_BASE } from '../consts';
+import { environment } from '../../environments/environment';
+
+const STAGE34_HOST_BASE = environment.stage34_host_base;
 
 @Injectable()
 export class AuthService {

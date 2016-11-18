@@ -5,7 +5,9 @@ import { AuthService } from './auth.service';
 import { Stage } from '../models/stage';
 import { Repo, Branch } from '../models/repo';
 
-import { STAGE34_API_BASE } from '../consts';
+import { environment } from '../../environments/environment';
+
+const STAGE34_API_BASE = environment.stage34_api_base;
 
 @Injectable()
 export class StageService {

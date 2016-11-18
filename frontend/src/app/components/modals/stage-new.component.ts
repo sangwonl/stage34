@@ -7,7 +7,7 @@ import { Repo, Branch } from '../../models/repo';
 @Component({
     selector: 'stage-new',
     templateUrl: 'stage-new.component.html',
-    styleUrls: ['stage-new.component.css']
+    styleUrls: ['stage-new.component.scss']
 })
 export class StageNewComponent implements AfterViewInit {
     private title: string = '';

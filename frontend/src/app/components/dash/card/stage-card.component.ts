@@ -23,7 +23,7 @@ export class StageCardComponent implements OnInit {
 
     private statusIconClass() {
         return {
-            'fa-spinner fa-pulse fa-fw': ['creating', 'changing'].includes(this.stage.status),
+            'fa-spinner fa-pulse fa-fw': this.stage.status in ['creating', 'changing'],
             'fa-stop': this.stage.status === 'running',
             'fa-play': this.stage.status ==='paused'
         }
@@ -42,7 +42,7 @@ export class StageCardComponent implements OnInit {
     }
 
     private onStatusClicked() {
-        if (['running', 'paused'].includes(this.stage.status)) {
+        if (this.stage.status in ['running', 'paused']) {
             this.toggleStatus.emit({value: this.stage});
         }
     }
