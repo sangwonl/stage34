@@ -14,7 +14,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/mime.types:/etc/nginx/mime.types
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
       - ./webapp/assets:/usr/stage34/assets
       - ./webapp:/usr/stage34/webapp
       - ./data/db:/usr/stage34/db
@@ -34,7 +34,7 @@ services:
     links:
       - redis:redis
     environment:
-      - ENV=prod 
+      - ENV=dev
     command:
       - "manage.py"
       - "runserver"
@@ -55,7 +55,7 @@ services:
     links:
       - redis:redis
     environment:
-      - ENV=prod 
+      - ENV=dev
     command:
       - "celeryworker.py"
       - "worker"
@@ -78,8 +78,10 @@ services:
       - stage34-volume
     links:
       - webapp:webapp
+    extra_hosts:
+      - "frontend:${DOCKERHOST}"
     environment:
-      - ENV=prod 
+      - ENV=dev
     restart: unless-stopped
 
 networks:

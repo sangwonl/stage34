@@ -199,3 +199,15 @@ CELERYBEAT_SCHEDULE = {
         'args': ('world',),
     },
 }
+
+# override proper config variables
+# by importing custom config module
+# matched to the environment variable, ENV 
+try:
+    from importlib import import_module
+    ENV = os.environ.get('ENV', 'dev')
+    custom_conf = import_module('.' + ENV, __name__)
+    for key in filter(lambda x: not x.startswith('__'), dir(custom_conf)):
+        globals()[key] = getattr(custom_conf, key)
+except (ImportError, AttributeError):
+    print 'Failed to import custom configurations.'

@@ -5,7 +5,7 @@ RUN apt-get update && apt-get -y install nginx
 
 WORKDIR /etc/nginx
 
-CMD ["nginx"]
+ENTRYPOINT ["nginx"]
 
 EXPOSE 80
 EXPOSE 443
