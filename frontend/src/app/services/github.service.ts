@@ -39,8 +39,8 @@ export class GithubService {
   public getRepositories() {
     let url = `${GITHUB_API_BASE}/user/repos`;
     let params = new URLSearchParams()
-    params.set('sort', 'updated');
-    params.set('direction', 'desc');
+    params.set('sort', 'full_name');
+    params.set('direction', 'asc');
     params.set('per_page', '1000');
 
     let headers = new Headers();
@@ -53,9 +53,14 @@ export class GithubService {
 
   public getBranches(repo: Repo) {
     let url = `${GITHUB_API_BASE}/repos/${repo.full_name}/branches`;
+    let params = new URLSearchParams()
+    params.set('sort', 'full_name');
+    params.set('direction', 'asc');
+    params.set('per_page', '1000');
+
     let headers = new Headers();
     this.setAuthorizationHeader(headers);
-    return this.http.get(url, { headers: headers })
+    return this.http.get(url, { headers: headers, search: params })
       .toPromise()
       .then(response => response.json().map((b: any) => new Branch(b)))
       .catch(this.handleError);
