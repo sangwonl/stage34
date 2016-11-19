@@ -4,20 +4,20 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-    selector: 'nav-bar',
-    templateUrl: 'nav-bar.component.html',
-    styleUrls: ['nav-bar.component.css']
+  selector: 'nav-bar',
+  templateUrl: 'nav-bar.component.html',
+  styleUrls: ['nav-bar.component.scss']
 })
 export class NavBarComponent implements OnInit {
-    constructor(
-        private authService: AuthService,
-        private router: Router
-    ) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-    ngOnInit() {}
+  ngOnInit() {}
 
-    private onLogout() {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-    }
+  private onLogout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

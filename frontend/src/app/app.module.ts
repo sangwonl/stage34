@@ -11,7 +11,7 @@ import { DashComponent } from './components/dash/dash.component';
 import { StageCardComponent } from './components/dash/card/stage-card.component';
 import { StageInfoComponent } from './components/modals/stage-info.component';
 import { StageNewComponent } from './components/modals/stage-new.component';
-import { appRouting } from './app.routes';
+import { AppRouteModule } from './app.routes';
 
 import { CookieService } from 'angular2-cookie/core';
 import { AuthService } from './services/auth.service';
@@ -27,7 +27,7 @@ import { TimeAgoPipe } from 'angular2-moment';
     FormsModule,
     HttpModule,
     Ng2BootstrapModule,
-    appRouting
+    AppRouteModule
   ],
   declarations: [
     AppComponent,
@@ -50,5 +50,4 @@ import { TimeAgoPipe } from 'angular2-moment';
   ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
-}
+export class AppModule {}

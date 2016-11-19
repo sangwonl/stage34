@@ -2,21 +2,21 @@
 
 <!-- grid dash -->
 <div class="container-fluid">
-    <ul>
-        <li *ngFor="let stage of stages">
-            <stage-card [stage]="stage"
-                (showInfo)="onShowStageInfo($event)"
-                (toggleStatus)="onToggleStageStatus($event)"
-                (trash)="onTrashStage($event)"
-                (refresh)="onRefreshStage($event)">
-            </stage-card>
-        </li>
-        <li>
-            <stage-card [forNew]="true"
-                (addNew)="onAddNewStage($event)">
-            </stage-card>
-        </li>
-    </ul>
+  <ul>
+    <li *ngFor="let stage of stages">
+      <stage-card [stage]="stage"
+        (showInfo)="onShowStageInfo($event)"
+        (toggleStatus)="onToggleStageStatus($event)"
+        (trash)="onTrashStage($event)"
+        (refresh)="onRefreshStage($event)">
+      </stage-card>
+    </li>
+    <li>
+      <stage-card [forNew]="true"
+        (addNew)="onAddNewStage($event)">
+      </stage-card>
+    </li>
+  </ul>
 </div>
 
 <stage-info #stageInfoModal></stage-info>

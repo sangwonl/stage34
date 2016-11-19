@@ -1,6 +1,6 @@
 export class User {
-    id: number;
-    email: string;
-    token: string;
-    access_token: string;
+  id: number;
+  email: string;
+  token: string;
+  access_token: string;
 }

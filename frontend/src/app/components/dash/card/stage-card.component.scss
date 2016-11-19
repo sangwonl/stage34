@@ -1,36 +1,36 @@
 .stage-card {
-    width: 200px;
-    height: 180px;
-    margin: 20px; 
-    padding: 14px;
-    border-radius: 4px;
-    border: 1px solid #afafaf;
+  width: 200px;
+  height: 180px;
+  margin: 20px; 
+  padding: 14px;
+  border-radius: 4px;
+  border: 1px solid #afafaf;
 }
 
 .stage-card-paused {
-    background: #f1f1f1;
+  background: #f1f1f1;
 }
 
 .stage-card-adding {
-    background: #efefef;
+  background: #efefef;
 }
 
 .stage-card-running {
-    background: #f4f4ff;
+  background: #f4f4ff;
 }
 
 .stage-header {
-    height: 40px;
+  height: 40px;
 }
 
 .stage-title {
-    font-size: 14px;
-    font-weight: 400;
-    float: left;
-    width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 400;
+  float: left;
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stage-text {
