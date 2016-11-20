@@ -29,7 +29,7 @@ export class DashComponent implements OnInit {
 
   ngOnInit() {
     this.fetchStages();
-    this.autoFetchTimer = setInterval(() => { this.fetchStages(); }, 1000);
+    this.autoFetchTimer = setInterval(() => { this.fetchStages(); }, 2000);
   }
 
   ngOnDestroy() {
@@ -88,7 +88,7 @@ export class DashComponent implements OnInit {
   private onTrashStage(event: any) {
     let targetStage: Stage = event.value;
     this.stageService.deleteStage(targetStage).then(() => {
-      this.stages = this.stages.filter(s => s !== targetStage);
+      targetStage.status = 'deleting';
     })
   }
 

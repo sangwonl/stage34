@@ -132,6 +132,9 @@ class StageDetailHandler(AuthRequiredMixin, View):
         if not stage:
             return JSENDError(status_code=404, msg='stage not found')
 
+        stage.status = 'deleting'
+        stage.save()
+
         github_access_key = request.user.jwt_payload.get('access_token')
         task_delete_stage.apply_async(args=[github_access_key, stage_id])
 

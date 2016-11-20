@@ -21,6 +21,13 @@ export class StageCardComponent implements OnInit {
 
     ngOnInit() {}
 
+    private trashIconClass() {
+        return {
+            'fa-spinner fa-pulse fa-fw': ['deleting'].includes(this.stage.status),
+            'fa-trash': this.stage.status === 'paused'
+        }
+    }
+
     private statusIconClass() {
         return {
             'fa-spinner fa-pulse fa-fw': ['creating', 'changing'].includes(this.stage.status),
@@ -30,7 +37,7 @@ export class StageCardComponent implements OnInit {
     }
 
     private canTrash() {
-        return this.stage && this.stage.status === 'paused';
+        return this.stage &&  ['deleting', 'paused'].includes(this.stage.status);
     }
 
     private canRefresh() {

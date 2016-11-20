@@ -103,7 +103,7 @@ def task_delete_stage(github_access_key, stage_id):
     if not stage:
         return 'error'
 
-    if stage.status not in ('paused'):
+    if stage.status not in ('deleting'):
         return 'error'
 
     # get proper provision backend
