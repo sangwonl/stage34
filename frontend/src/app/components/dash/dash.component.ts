@@ -20,6 +20,7 @@ export class DashComponent implements OnInit {
   @ViewChild('stageInfoModal') stageInfoModal: StageInfoComponent;
   @ViewChild('stageNewModal') stageNewModal: StageNewComponent;
   private stages: Stage[];
+  private autoFetchTimer: any;
 
   constructor(
     private stageService: StageService,
@@ -27,19 +28,36 @@ export class DashComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.refreshStages();
+    this.fetchStages();
+    this.autoFetchTimer = setInterval(() => { this.fetchStages(); }, 2000);
   }
 
-  private refreshStages() {
-    this.stageService.getStages().then((stages: Stage[]) => {
-      this.stages = stages;
-      for (let stage of this.stages) {
+  ngOnDestroy() {
+    if (this.autoFetchTimer) {
+      clearInterval(this.autoFetchTimer);
+    }
+  }
+
+  private fetchCommitDiff(stages: Stage[]) {
+    let promises: Promise<Stage>[] = [];
+    for (let stage of stages) {
+      promises.push(new Promise<Stage>((resolve, reject) => {
+        stage.commits = [];
         this.githubService.getCompareBranch(stage).then((compare: Compare) => {
           stage.compare_url = compare.permalink_url;
           stage.commits = compare.commits;
+          resolve(stage);
         });
-        stage.commits = [];
-      }
+      }));
+    };
+    return Promise.all(promises);
+  }
+
+  private fetchStages() {
+    this.stageService.getStages().then((stages: Stage[]) => {
+      this.fetchCommitDiff(stages).then((stagesWithDiff: Stage[]) => {
+        this.stages = stagesWithDiff;
+      });
     });
   }
 
@@ -63,14 +81,14 @@ export class DashComponent implements OnInit {
     let runOnClose = newStageInfo.runOnClose;
 
     this.stageService.createStage(newStageInfo).then((stage: Stage) => {
-      this.refreshStages();
+      this.fetchStages();
     })
   }
 
   private onTrashStage(event: any) {
     let targetStage: Stage = event.value;
     this.stageService.deleteStage(targetStage).then(() => {
-      this.stages = this.stages.filter(s => s !== targetStage);
+      targetStage.status = 'deleting';
     })
   }
 

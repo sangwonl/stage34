@@ -34,6 +34,7 @@ class Membership(models.Model):
 class Stage(models.Model):
     STATUS_CHOICES = (
         ('creating', 'Creating'),
+        ('deleting', 'Deleting'),
         ('changing', 'Changing'),
         ('running', 'Running'),
         ('paused', 'Paused'),

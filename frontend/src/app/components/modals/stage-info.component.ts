@@ -23,12 +23,14 @@ export class StageInfoComponent implements AfterViewInit {
       this.stage = stage;
       this.stageService.getStageLog(this.stage.id).then((logData: any) => {
           this.logData = logData;
-          this.infoModal.show();
       }).catch((error: any) => {
           this.logData = null;
+      }).then(() => {
           this.infoModal.show();
       });
   }
 
-  public hideModal() { this.infoModal.hide(); }
+  public hideModal() {
+    this.infoModal.hide();
+  }
 }
