@@ -41,14 +41,12 @@ export class DashComponent implements OnInit {
   private fetchCommitDiff(stages: Stage[]) {
     let promises: Promise<Stage>[] = [];
     for (let stage of stages) {
-      promises.push(new Promise<Stage>((resolve, reject) => {
-        stage.commits = [];
-        this.githubService.getCompareBranch(stage).then((compare: Compare) => {
-          stage.compare_url = compare.permalink_url;
-          stage.commits = compare.commits;
-          resolve(stage);
-        });
-      }));
+      let promise = this.githubService.getCompareBranch(stage).then((compare: Compare) => {
+        stage.compare_url = compare.permalink_url;
+        stage.commits = compare.commits;
+        return stage;
+      });
+      promises.push(promise);
     };
     return Promise.all(promises);
   }

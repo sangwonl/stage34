@@ -20,7 +20,6 @@ services:
       - ./data/db:/usr/stage34/db
       - ./data/repo:/usr/stage34/repo
       - ./frontend/dist:/usr/stage34/frontend
-      - ./frontend/public:/usr/stage34/frontend/public
 
   webapp:
     container_name: stage34-webapp
