@@ -1,5 +1,5 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { ModalDirective } from 'ng2-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { StageService } from '../../services/stage.service';
 
@@ -11,7 +11,7 @@ import { Stage } from '../../models/stage';
   styleUrls: ['stage-info.component.scss']
 })
 export class StageInfoComponent implements AfterViewInit {
-  @ViewChild('infoModal') infoModal: ModalDirective;
+  @ViewChild('infoModal') public infoModal: ModalDirective;
   private stage: Stage;
   private logData: any;
 
