@@ -30,7 +30,7 @@ Freescale Staging Environment
 - Docker & Docker Compose
 - Python 2.7
 - npm 3.x.x
-- node 4.x.x
+- node 6.x.x
 
 
 ## Prerequisite

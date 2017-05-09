@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { Ng2BootstrapModule } from 'ng2-bootstrap/ng2-bootstrap';
+
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppComponent } from './app.component';
 import { NavBarComponent } from './components/nav/nav-bar.component';
@@ -23,10 +24,10 @@ import { TimeAgoPipe } from 'angular2-moment';
 
 @NgModule({
   imports: [
+    ModalModule,
     BrowserModule,
     FormsModule,
     HttpModule,
-    Ng2BootstrapModule,
     AppRouteModule
   ],
   declarations: [

@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
-import { ModalDirective } from 'ng2-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { GithubService } from '../../services/github.service';
 import { Repo, Branch } from '../../models/repo';
@@ -18,7 +18,7 @@ export class StageNewComponent implements AfterViewInit {
   private repos: Repo[];
   private branches: Branch[];
 
-  @ViewChild('newModal') newModal: ModalDirective;
+  @ViewChild('newModal') public newModal: ModalDirective;
   @Output() createNew = new EventEmitter();
 
   constructor(private githubService: GithubService) {}
