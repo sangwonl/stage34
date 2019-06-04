@@ -38,8 +38,8 @@ export class AuthService {
         let url = `${STAGE34_HOST_BASE}/auth/github_auth_url/`;
         return this.http.get(url)
             .toPromise()
-            .then(response => response.json().data) 
-            .catch(this.handleError);        
+            .then(response => response.json().data)
+            .catch(this.handleError);
     }
 
     private postLogin(email: string, accessToken: string) {
@@ -61,7 +61,7 @@ export class AuthService {
     }
 
     public confirm(email: string, accessToken: string) {
-        return this.postLogin(email, accessToken).then(user => {
+        return this.postLogin(email, accessToken).then((user: User) => {
             localStorage.setItem('token', user.token);
             this.isLoggedIn = true;
             return this.isLoggedIn;

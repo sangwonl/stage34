@@ -26,9 +26,9 @@
     var packages = {
         'app': { main: 'main.js', defaultExtension: 'js' },
         'rxjs': { main: 'rxjs.js', defaultExtension: 'js' },
-        'angular2-cookie': { main: 'core.js', defaultExtension: 'js' } 
+        'angular2-cookie': { main: 'core.js', defaultExtension: 'js' }
     };
-    
+
     // var ngPackageNames = [
     //     'common',
     //     'compiler',
@@ -58,7 +58,7 @@
         transpiler: 'ts',
         typescriptOptions: { tsconfig: true },
         meta: { 'typescript': { 'exports': 'ts' } },
-        paths: { 'npm:': 'https://unpkg.com/' },        
+        paths: { 'npm:': 'https://unpkg.com/' },
         map: map,
         packages: package
     });
