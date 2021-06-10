@@ -1,4 +1,4 @@
-django==1.10.0
+django==2.2.24
 django_extensions==1.7.2
 django-debug-toolbar==1.5
 pyjwt==1.4.2
