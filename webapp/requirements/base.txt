@@ -7,4 +7,4 @@ celery==3.1.23
 redis==2.10.5
 fabric==1.12.0
 pyaml==15.8.2
-mako==1.0.4
+mako==1.2.2
